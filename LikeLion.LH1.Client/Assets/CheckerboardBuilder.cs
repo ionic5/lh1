@@ -14,71 +14,56 @@ public class CheckerboardBuilder : MonoBehaviour
     private float _blockSize;
     [SerializeField]
     private Vector2 _offset;
+    [SerializeField]
+    private Vector3 _blockPivot;
+    [SerializeField]
+    private Vector2 _checkerboardSize;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         Vector3 origin = _originPoint.transform.position;
-
-        int rows = 18;
-        int cols = 18;
-
-        // 내부 격자 블록 생성
-        for (int y = 0; y < rows; y++)
-        {
-            for (int x = 0; x < cols; x++)
-            {
-                float posX = origin.x + _offset.x + x * (_blockSize + _gap);
-                float posZ = origin.z + _offset.y + y * (_blockSize + _gap);
-
-                Vector3 pos = new Vector3(posX, origin.y, posZ);
-
-                GameObject block = Instantiate(_blockPrefab, pos, Quaternion.identity);
-                block.transform.localScale = new Vector3(_blockSize, _blockSize, _blockSize);
-                block.transform.SetParent(_root.transform, true);
-            }
-        }
+        int rows = (int)_checkerboardSize.x;
+        int cols = (int)_checkerboardSize.y;
 
         float boardWidth = cols * _blockSize + (cols - 1) * _gap;
         float boardHeight = rows * _blockSize + (rows - 1) * _gap;
 
-        var cubePivot = new Vector3(0.5f, 0.5f, 0.5f);
+        void SpawnElement(Vector3 localPos, Vector3 localScale)
+        {
+            GameObject obj = Instantiate(_blockPrefab, _root.transform);
+            obj.transform.localPosition = localPos;
+            obj.transform.localScale = localScale;
+        }
 
-        // 위쪽
-        Vector3 topPos = new Vector3(origin.x + _offset.x + boardWidth / 2f - cubePivot.x,
-                                     origin.y,
-                                     origin.z + _offset.y - _gap - _blockSize / 2f - cubePivot.z);
-        GameObject topBorder = Instantiate(_blockPrefab, topPos, Quaternion.identity);
-        topBorder.transform.localScale = new Vector3(boardWidth + 2 * _gap + 2 * _blockSize, _blockSize, _blockSize);
-        topBorder.transform.SetParent(_root.transform, true);
+        for (int y = 0; y < rows; y++)
+        {
+            for (int x = 0; x < cols; x++)
+            {
+                float localX = _offset.x + x * (_blockSize + _gap);
+                float localZ = _offset.y + y * (_blockSize + _gap);
 
-        // 아래쪽
-        Vector3 bottomPos = new Vector3(origin.x + _offset.x + boardWidth / 2f - cubePivot.x,
-                                        origin.y,
-                                        origin.z + _offset.y + boardHeight + _gap + _blockSize / 2f - cubePivot.z);
-        GameObject bottomBorder = Instantiate(_blockPrefab, bottomPos, Quaternion.identity);
-        bottomBorder.transform.localScale = new Vector3(boardWidth + 2 * _gap + 2 * _blockSize, _blockSize, _blockSize);
-        bottomBorder.transform.SetParent(_root.transform, true);
+                Vector3 localPos = new Vector3(localX, 0, localZ);
+                SpawnElement(localPos, new Vector3(_blockSize, _blockSize, _blockSize));
+            }
+        }
 
-        // 왼쪽
-        Vector3 leftPos = new Vector3(origin.x + _offset.x - _gap - _blockSize / 2f - cubePivot.x,
-                                      origin.y,
-                                      origin.z + _offset.y + boardHeight / 2f - cubePivot.z);
-        GameObject leftBorder = Instantiate(_blockPrefab, leftPos, Quaternion.identity);
-        leftBorder.transform.localScale = new Vector3(_blockSize, _blockSize, boardHeight + 2 * _gap + 2 * _blockSize);
-        leftBorder.transform.SetParent(_root.transform, true);
+        float centerX = _offset.x + boardWidth / 2f - _blockPivot.x;
+        float centerZ = _offset.y + boardHeight / 2f - _blockPivot.z;
+        float edgeOffset = _gap + _blockSize / 2f;
 
-        // 오른쪽
-        Vector3 rightPos = new Vector3(origin.x + _offset.x + boardWidth + _gap + _blockSize / 2f - cubePivot.x,
-                                       origin.y,
-                                       origin.z + _offset.y + boardHeight / 2f - cubePivot.z);
-        GameObject rightBorder = Instantiate(_blockPrefab, rightPos, Quaternion.identity);
-        rightBorder.transform.localScale = new Vector3(_blockSize, _blockSize, boardHeight + 2 * _gap + 2 * _blockSize);
-        rightBorder.transform.SetParent(_root.transform, true);
+        Vector3 horizontalScale = new Vector3(boardWidth + _gap * 2 + _blockSize * 2, _blockSize, _blockSize);
+        Vector3 verticalScale = new Vector3(_blockSize, _blockSize, boardHeight + _gap * 2 + _blockSize * 2);
+
+        // Top
+        SpawnElement(new Vector3(centerX, 0, _offset.y - edgeOffset - _blockPivot.z), horizontalScale);
+        // Bottom
+        SpawnElement(new Vector3(centerX, 0, _offset.y + boardHeight + edgeOffset - _blockPivot.z), horizontalScale);
+        // Left
+        SpawnElement(new Vector3(_offset.x - edgeOffset - _blockPivot.x, 0, centerZ), verticalScale);
+        // Right
+        SpawnElement(new Vector3(_offset.x + boardWidth + edgeOffset - _blockPivot.x, 0, centerZ), verticalScale);
     }
 
-
-    // Update is called once per frame
     void Update()
     {
 
