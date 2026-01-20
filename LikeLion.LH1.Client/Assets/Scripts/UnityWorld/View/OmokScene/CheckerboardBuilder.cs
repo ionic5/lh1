@@ -10,6 +10,8 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         [SerializeField]
         private GameObject _blockPrefab;
         [SerializeField]
+        private GameObject _stonePointPrefab;
+        [SerializeField]
         private float _gap;
         [SerializeField]
         private GameObject _root;
@@ -26,10 +28,15 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
         void Start()
         {
-            Vector3 origin = _originPoint.transform.position;
             int rows = (int)_checkerboardSize.x;
             int cols = (int)_checkerboardSize.y;
 
+            BuildCheckerboard(rows, cols);
+            BuildStonePoints(rows, cols);
+        }
+
+        private void BuildCheckerboard(int rows, int cols)
+        {
             float boardWidth = cols * _blockSize + (cols - 1) * _gap;
             float boardHeight = rows * _blockSize + (rows - 1) * _gap;
 
@@ -69,9 +76,27 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
             SpawnElement(new Vector3(_offset.x + boardWidth + edgeOffset - _blockPivot.x, 0, centerZ), verticalScale);
         }
 
-        void Update()
+        private void BuildStonePoints(int rows, int cols)
         {
+            int pointRows = rows + 1;
+            int pointCols = cols + 1;
 
+            float startPointX = _offset.x - (_blockSize / 2f + _gap / 2f);
+            float startPointZ = _offset.y - (_blockSize / 2f + _gap / 2f);
+
+            for (int y = 0; y < pointRows; y++)
+            {
+                for (int x = 0; x < pointCols; x++)
+                {
+                    float pX = startPointX + x * (_blockSize + _gap);
+                    float pZ = startPointZ + y * (_blockSize + _gap);
+
+                    Vector3 pointPos = new Vector3(pX, 0.1f, pZ);
+
+                    GameObject pointObj = Instantiate(_stonePointPrefab, _root.transform);
+                    pointObj.transform.localPosition = pointPos;
+                }
+            }
         }
     }
 

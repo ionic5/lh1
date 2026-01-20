@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blockPrefab: {fileID: 2388436367399021223, guid: 3a0e24a77a1c7924b9b7e7d7cdc28fe9, type: 3}
+  _stonePointPrefab: {fileID: 900155869714924566, guid: 435ab7f2514c5f2459f6a264becd25c8, type: 3}
   _gap: 0.2
   _root: {fileID: 125884464}
   _originPoint: {fileID: 1217480616}
