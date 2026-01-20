@@ -26,12 +26,16 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         [SerializeField]
         private Vector2 _checkerboardSize;
 
+        private System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>> _stonePoints;
+
         public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
 
         void Start()
         {
             int rows = (int)_checkerboardSize.x;
             int cols = (int)_checkerboardSize.y;
+
+            _stonePoints = new System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>>();
 
             BuildCheckerboard(rows, cols);
             BuildStonePoints(rows, cols);
@@ -88,6 +92,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
             for (int y = 0; y < pointRows; y++)
             {
+                _stonePoints.Add(new System.Collections.Generic.List<StonePoint>());
                 for (int x = 0; x < pointCols; x++)
                 {
                     float pX = startPointX + x * (_blockSize + _gap);
@@ -99,6 +104,8 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
                     pointObj.transform.localPosition = pointPos;
 
                     var stonePt = pointObj.GetComponent<StonePoint>();
+
+                    _stonePoints[y].Add(stonePt);
 
                     int row = y;
                     int col = x;
