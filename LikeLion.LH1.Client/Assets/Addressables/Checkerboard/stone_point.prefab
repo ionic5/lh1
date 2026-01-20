@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4417594534119544984}
   - component: {fileID: 2598159808759305207}
   - component: {fileID: 8609564264323428390}
+  - component: {fileID: 6328887913844744551}
   m_Layer: 0
   m_Name: stone_point
   m_TagString: Untagged
@@ -62,3 +63,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6328887913844744551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900155869714924566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33083c4aaaf92f845961accacb2ef8d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

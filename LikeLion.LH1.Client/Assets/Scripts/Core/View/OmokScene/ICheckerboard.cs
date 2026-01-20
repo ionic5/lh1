@@ -10,8 +10,6 @@ namespace LikeLion.LH1.Client.Core.View.OmokScene
         event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
 
         void PutStone(int column, int row);
-
-        bool IsStonePointEmpty(int column, int row);
     }
 }
 

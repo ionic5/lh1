@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 {
-    public class CheckerboardBuilder : MonoBehaviour
+    public class CheckerboardBuilder : MonoBehaviour, ICheckerboard
     {
         [SerializeField]
         private GameObject _blockPrefab;
@@ -25,6 +25,8 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         private Vector3 _blockPivot;
         [SerializeField]
         private Vector2 _checkerboardSize;
+
+        public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
 
         void Start()
         {
@@ -95,9 +97,26 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
                     GameObject pointObj = Instantiate(_stonePointPrefab, _root.transform);
                     pointObj.transform.localPosition = pointPos;
+
+                    var stonePt = pointObj.GetComponent<StonePoint>();
+
+                    int row = y;
+                    int col = x;
+                    stonePt.ClickedEvent += (sender, args) =>
+                    {
+                        StonePointClickedEvent?.Invoke(this, new StonePointClickedEventArgs()
+                        {
+                            Row = row,
+                            Column = col,
+                        });
+                    };
                 }
             }
         }
-    }
 
+        public void PutStone(int column, int row)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
