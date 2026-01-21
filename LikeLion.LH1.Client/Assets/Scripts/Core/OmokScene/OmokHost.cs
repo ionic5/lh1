@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
     public class OmokHost
     {
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
+
         private Checkerboard _checkerboard;
         private List<IPlayer> _players;
+        private Core.Timer _timer;
+        private float _limitTime;
 
         public void Start()
         {
             var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));
-            player.StartTurn();
+            StartTurn(player);
         }
 
         private void OnStonePuttedEvent(object sender, StonePuttedEventArgs args)
@@ -24,11 +25,25 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             if (winnerStone == StoneType.Null)
             {
                 var player = _players.First(entry => entry.IsStoneOwner(args.StoneType));
-                player.StartTurn();
+                StartTurn(player);
                 return;
             }
 
             GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs { WinnerStone = winnerStone });
+        }
+
+        private void StartTurn(IPlayer player)
+        {
+            player.StartTurn();
+
+            _timer.Stop(0);
+            _timer.Start(0, _limitTime, () =>
+            {
+                player.HaltTurn();
+
+                var otherPlayer = _players.First(entry => entry != player);
+                otherPlayer.StartTurn();
+            });
         }
 
         private int CheckWinner(int[][] board)
