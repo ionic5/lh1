@@ -12,11 +12,23 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 
         public Checkerboard _checkerboard;
 
-        private void OnStonePuttedEvent(object sender, EventArgs args)
+        public List<IPlayer> _players;
+
+        public void Start()
+        {
+            var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));
+            player.StartTurn();
+        }
+
+        private void OnStonePuttedEvent(object sender, StonePuttedEventArgs args)
         {
             var winnerStone = CheckWinner(_checkerboard.ToArray());
             if (winnerStone == StoneType.Null)
+            {
+                var player = _players.First(entry => entry.IsStoneOwner(args.StoneType));
+                player.StartTurn();
                 return;
+            }
 
             GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs { WinnerStone = winnerStone });
         }
