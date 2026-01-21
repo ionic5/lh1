@@ -1,6 +1,3 @@
-
-
-using Codice.Client.BaseCommands.BranchExplorer;
 using System;
 
 namespace LikeLion.LH1.Client.Core.View.OmokScene
@@ -9,7 +6,7 @@ namespace LikeLion.LH1.Client.Core.View.OmokScene
     {
         event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
 
-        void PutStone(int column, int row);
+        void PutStone(int column, int row, int stoneType);
     }
 }
 

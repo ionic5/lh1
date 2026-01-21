@@ -121,7 +121,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
             }
         }
 
-        public void PutStone(int column, int row)
+        public void PutStone(int column, int row, int stoneType)
         {
             throw new NotImplementedException();
         }
