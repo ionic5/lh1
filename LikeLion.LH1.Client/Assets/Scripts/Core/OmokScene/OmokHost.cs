@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
-    public class GameHost
+    public class OmokHost
     {
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
-
-        public Checkerboard _checkerboard;
-
-        public List<IPlayer> _players;
+        private Checkerboard _checkerboard;
+        private List<IPlayer> _players;
 
         public void Start()
         {
