@@ -8,10 +8,18 @@ namespace LikeLion.LH1.Client.Core.OmokScene
     {
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
-        private Checkerboard _checkerboard;
-        private List<IPlayer> _players;
-        private Core.Timer _timer;
-        private float _limitTime;
+        private readonly Checkerboard _checkerboard;
+        private readonly List<IPlayer> _players;
+        private readonly Core.Timer _timer;
+        private readonly float _limitTime;
+
+        public OmokHost(Checkerboard checkerboard, List<IPlayer> players, Timer timer, float limitTime)
+        {
+            _checkerboard = checkerboard;
+            _players = players;
+            _timer = timer;
+            _limitTime = limitTime;
+        }
 
         public void Start()
         {

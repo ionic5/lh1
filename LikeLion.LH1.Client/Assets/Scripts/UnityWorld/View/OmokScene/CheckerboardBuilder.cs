@@ -1,3 +1,4 @@
+using LikeLion.LH1.Client.Core.OmokScene;
 using LikeLion.LH1.Client.Core.View.OmokScene;
 using System;
 using UnityEngine;
@@ -25,6 +26,10 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         private Vector3 _blockPivot;
         [SerializeField]
         private Vector2 _checkerboardSize;
+        [SerializeField]
+        private ObjectPool _blackStonePool;
+        [SerializeField]
+        private ObjectPool _whiteStonePool;
 
         private System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>> _stonePoints;
 
@@ -123,7 +128,16 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
         public void PutStone(int column, int row, int stoneType)
         {
-            throw new NotImplementedException();
+            GameObject stone = null;
+            if (stoneType == StoneType.White)
+                stone = _whiteStonePool.Get();
+            else if (stoneType == StoneType.Black)
+                stone = _blackStonePool.Get();
+
+            if (stone == null)
+                return;
+
+            stone.transform.position = _stonePoints[column][row].transform.position;
         }
     }
 }
