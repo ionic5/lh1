@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 {
-    public class CheckerboardBuilder : MonoBehaviour, ICheckerboard
+    public class Checkerboard : MonoBehaviour, ICheckerboard
     {
         [SerializeField]
         private GameObject _blockPrefab;
