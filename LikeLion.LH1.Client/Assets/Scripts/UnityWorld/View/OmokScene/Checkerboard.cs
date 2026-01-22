@@ -33,7 +33,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
         private System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>> _stonePoints;
 
-        public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
+        public event EventHandler<Core.View.OmokScene.StonePointClickedEventArgs> StonePointClickedEvent;
 
         void Start()
         {
@@ -116,7 +116,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
                     int col = x;
                     stonePt.ClickedEvent += (sender, args) =>
                     {
-                        StonePointClickedEvent?.Invoke(this, new StonePointClickedEventArgs()
+                        StonePointClickedEvent?.Invoke(this, new Core.View.OmokScene.StonePointClickedEventArgs()
                         {
                             Row = row,
                             Column = col,

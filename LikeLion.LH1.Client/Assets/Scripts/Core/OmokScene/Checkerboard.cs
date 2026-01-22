@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
@@ -12,9 +10,21 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         private readonly List<List<int>> _board;
         private readonly ICheckerboard _checkerboardView;
 
+        public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
+        public event EventHandler<StonePuttedEventArgs> StonePuttedEvent;
+
         public Checkerboard(ICheckerboard checkerboardView)
         {
             _checkerboardView = checkerboardView;
+            _checkerboardView.StonePointClickedEvent += (sender, args) =>
+            {
+                StonePointClickedEvent?.Invoke(this, new StonePointClickedEventArgs
+                {
+                    Row = args.Row,
+                    Column = args.Column
+                });
+            };
+
             _board = new List<List<int>>();
             for (int i = 0; i < 19; i++)
             {
@@ -34,6 +44,8 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         {
             _board[column][row] = stoneType;
             _checkerboardView.PutStone(column, row, stoneType);
+
+            StonePuttedEvent?.Invoke(this, new StonePuttedEventArgs { StoneType = stoneType });
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
@@ -19,6 +20,7 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             _players = players;
             _timer = timer;
             _limitTime = limitTime;
+            _checkerboard.StonePuttedEvent += OnStonePuttedEvent;
         }
 
         public void Start()
@@ -29,11 +31,14 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 
         private void OnStonePuttedEvent(object sender, StonePuttedEventArgs args)
         {
+            var player = _players.First(entry => entry.IsStoneOwner(args.StoneType));
+            player.HaltTurn();
+
             var winnerStone = CheckWinner(_checkerboard.ToArray());
             if (winnerStone == StoneType.Null)
             {
-                var player = _players.First(entry => entry.IsStoneOwner(args.StoneType));
-                StartTurn(player);
+                var otherPlayer = _players.First(entry => !entry.IsStoneOwner(args.StoneType));
+                StartTurn(otherPlayer);
                 return;
             }
 
