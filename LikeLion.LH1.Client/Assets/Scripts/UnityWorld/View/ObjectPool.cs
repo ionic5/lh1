@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace LikeLion.LH1.Client.UnityWorld.View
+{
+    public class ObjectPool : MonoBehaviour
+    {
+        private UnityEngine.Pool.ObjectPool<GameObject> _pool;
+
+        [SerializeField]
+        private GameObject _prefab;
+
+        void Awake()
+        {
+            _pool = new UnityEngine.Pool.ObjectPool<GameObject>(
+                () => Instantiate(_prefab),
+                (obj) => obj.SetActive(true),
+                (obj) => obj.SetActive(false));
+        }
+
+        public GameObject Get()
+        {
+            return _pool.Get();
+        }
+
+        public void Return(GameObject gameObject)
+        {
+            _pool.Release(gameObject);
+        }
+    }
+}
