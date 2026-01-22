@@ -668,6 +668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 7514464831263476112, guid: f4c35491dbd28544ea4530417d50ab61, type: 3}
+  _root: {fileID: 125884464}
 --- !u!1 &741517446
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,6 +793,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 3249336502756984816, guid: d8245f86087187a4885b4f41517b9ebe, type: 3}
+  _root: {fileID: 125884464}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,6 +1011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaeaebb61dd07c1488238f20b2c785a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _checkerboard: {fileID: 125884466}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

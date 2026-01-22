@@ -9,13 +9,20 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 {
     public class Checkerboard
     {
-        private List<List<int>> _board;
-        private ICheckerboard _checkerboardView;
+        private readonly List<List<int>> _board;
+        private readonly ICheckerboard _checkerboardView;
 
         public Checkerboard(ICheckerboard checkerboardView)
         {
             _checkerboardView = checkerboardView;
             _board = new List<List<int>>();
+            for (int i = 0; i < 19; i++)
+            {
+                List<int> row = new List<int>();
+                for (int j = 0; j < 19; j++)
+                    row.Add(StoneType.Null);
+                _board.Add(row);
+            }
         }
 
         public int[][] ToArray()

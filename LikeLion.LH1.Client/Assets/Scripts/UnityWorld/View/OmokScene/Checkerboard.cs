@@ -137,7 +137,8 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
             if (stone == null)
                 return;
 
-            stone.transform.position = _stonePoints[column][row].transform.position;
+            var pos = _stonePoints[column][row].transform.localPosition;
+            stone.transform.localPosition = new Vector3(pos.x, 0.6f, pos.z);
         }
     }
 }

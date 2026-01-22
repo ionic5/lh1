@@ -13,11 +13,13 @@ namespace LikeLion.LH1.Client.UnityWorld.View
 
         [SerializeField]
         private GameObject _prefab;
+        [SerializeField]
+        private GameObject _root;
 
         void Awake()
         {
             _pool = new UnityEngine.Pool.ObjectPool<GameObject>(
-                () => Instantiate(_prefab),
+                () => Instantiate(_prefab, _root == null ? null : _root.transform),
                 (obj) => obj.SetActive(true),
                 (obj) => obj.SetActive(false));
         }
