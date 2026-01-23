@@ -114,30 +114,38 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
             string omokJson = JsonConvert.SerializeObject(omokData);
             string prompt = $@"
 ## Role
-당신은 오목(Gomoku) 전문가입니다. 
-제공된 오목판의 크기와 돌들의 위치를 분석하여, 승리하기 위한 최적의 다음 수를 제안하세요.
+You are a Gomoku (Five in a Row) Player. 
+Analyze the board size and stone positions to suggest the optimal next move for victory.
 
 ## Input Data Format
-- 0: 빈 공간, 1: 흑돌, 2: 백돌
-- 현재 차례: {turn}
+- 0: Empty, 1: Black, 2: White
+- Current Turn: {turn}
 
 ## Game Setting
-- Win Condition: 같은 색의 돌 5개가 가로, 세로, 혹은 대각선으로 연속되면 승리합니다.
-- Coordinate System: 좌하단이 (0,0)이며, 오른쪽으로 갈수록 x가 증가, 위로 갈수록 y가 증가합니다.
+- Win Condition: 5 consecutive stones of the same color (horizontal, vertical, or diagonal).
+- Coordinate System: Bottom-left is (0,0). X increases to the right, Y increases upwards.
 
 ## Difficulty Guidelines
-0 : 상대방이 3목이나 4목을 만들면 방어하는 데 집중하며, 눈에 보이는 자신의 돌을 연결합니다.
-1 : '공격이 최선의 방어'임을 이해합니다. 33이나 43을 만들기 위한 빌드업을 시도하며, 상대의 노림수를 미리 차단합니다.
-2 : 렌주룰(Renju Rule) 등의 금수를 고려하거나 유도하며, 수십 수 앞을 내다보는 수읽기를 통해 필승법(VCF, VCT)을 찾아냅니다.
+0 : Defensive focus. Blocks opponent's 3 or 4 in a row and connects own stones visible on the surface.
+1 : Aggressive play. Builds up for 3-3 or 4-3 threats and preemptively blocks opponent's strategic paths.
+2 : Advanced tactics. Considers Renju rules (forbidden moves), performs deep look-ahead (VCF, VCT), and induces winning sequences.
 
 ## Task
-1. 현재 놓인 돌들의 위치를 파악하여 머릿속으로 전체 판을 그리세요.
-2. 상대방의 공격 흐름(3목, 4목)을 차단해야 하는지, 혹은 본인({StoneType.White})의 승리 수(4-3 등)를 만들지 결정하세요.
-3. {difficulty} 수준에 맞는 최선의 수 하나를 결정하세요.
-4. 이미 돌이 놓여 있다면, 그 자리에는 돌을 놓을 수 없습니다.
+1. Map the entire board state mentally based on the provided stone positions.
+2. Determine whether to block the opponent's threats or create a winning formation (e.g., 4-3) for the current stone ({{StoneType}}).
+3. Select the single best move according to the Difficulty Level: {difficulty}.
+4. You MUST NOT place a stone where one already exists.
 
-현재 상태: {omokJson}
-반드시 JSON 형식으로만 답변하세요: {{ ""thought"": ""이유"", ""x"": x좌표, ""y"": y좌표 }}";
+## Current State
+{omokJson}
+
+## Output Format
+Respond ONLY in JSON format:
+{{
+  ""thought"": ""Reasoning for the move"",
+  ""x"": x_coordinate,
+  ""y"": y_coordinate
+}}";
 
             var requestBody = new
             {
