@@ -1,6 +1,5 @@
 ﻿namespace LikeLion.LH1.Client.Core.OmokScene
 {
-    // TODO Use gemini ai.
     public class AIPlayer : IPlayer
     {
         private readonly Checkerboard _board;
@@ -17,17 +16,11 @@
 
         public void StartTurn()
         {
-            _board.StonePointClickedEvent += OnStonePointClickedEvent;
+            // 다음 수를 비동기로 가져온다.
         }
 
         public void HaltTurn()
         {
-            _board.StonePointClickedEvent -= OnStonePointClickedEvent;
-        }
-
-        public void OnStonePointClickedEvent(object sender, StonePointClickedEventArgs args)
-        {
-            _board.PutStone(args.Column, args.Row, StoneType.White);
         }
     }
 }
