@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Collections;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -70,6 +71,7 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
 
         public async void StartTurn()
         {
+            Debug.Log($"AI Turn started.");
             try
             {
                 var whiteStones = new List<int[]>();
@@ -81,13 +83,13 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
                     for (var j = 0; j < array[i].Length; j++)
                     {
                         if (array[i][j] == StoneType.White)
-                            whiteStones.Add(new int[2] { j, i });
+                            whiteStones.Add(new int[2] { i, j });
                         if (array[i][j] == StoneType.Black)
-                            blackStones.Add(new int[2] { j, i });
+                            blackStones.Add(new int[2] { i, j });
                     }
                 }
 
-                AiResponse move = await GetAiMoveAsync(19, StoneType.White, blackStones, whiteStones, 1);
+                AiResponse move = await GetAiMoveAsync(19, StoneType.White, blackStones, whiteStones, 0);
 
                 if (move != null)
                 {
@@ -116,37 +118,29 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
 ## Role
 You are a Gomoku (Five in a Row) Player. 
 Analyze the board size and stone positions to suggest the optimal next move for victory.
-
 ## Input Data Format
 - 0: Empty, 1: Black, 2: White
 - Current Turn: {turn}
-
 ## Game Setting
 - Win Condition: 5 consecutive stones of the same color (horizontal, vertical, or diagonal).
 - Coordinate System: Bottom-left is (0,0). X increases to the right, Y increases upwards.
-
 ## Difficulty Guidelines
 0 : Defensive focus. Blocks opponent's 3 or 4 in a row and connects own stones visible on the surface.
 1 : Aggressive play. Builds up for 3-3 or 4-3 threats and preemptively blocks opponent's strategic paths.
 2 : Advanced tactics. Considers Renju rules (forbidden moves), performs deep look-ahead (VCF, VCT), and induces winning sequences.
-
 ## Task
 1. Map the entire board state mentally based on the provided stone positions.
 2. Determine whether to block the opponent's threats or create a winning formation (e.g., 4-3) for the current stone ({{StoneType}}).
 3. Select the single best move according to the Difficulty Level: {difficulty}.
 4. You MUST NOT place a stone where one already exists.
-
 ## Current State
 {omokJson}
-
 ## Output Format
 Respond ONLY in JSON format:
 {{
-  ""thought"": ""Reasoning for the move"",
   ""x"": x_coordinate,
   ""y"": y_coordinate
 }}";
-
             var requestBody = new
             {
                 contents = new[] {
@@ -178,6 +172,8 @@ Respond ONLY in JSON format:
                 // 3. 응답 파싱
                 var root = JsonConvert.DeserializeObject<GeminiResponse>(www.downloadHandler.text);
                 string aiText = root.candidates[0].content.parts[0].text;
+
+                Debug.Log(aiText);
 
                 // 마크다운 태그 제거 후 파싱
                 string cleanedJson = aiText.Replace("```json", "").Replace("```", "").Trim();
