@@ -1,22 +1,21 @@
-﻿using LikeLion.LH1.Client.Core.OmokScene;
+﻿using LikeLion.LH1.Client.Core;
+using LikeLion.LH1.Client.Core.OmokScene;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Unity.Collections;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace LikeLion.LH1.Client.UnityWorld.OmokScene
 {
-    public class AIPlayer : IPlayer
+    public class AIConsole : IAIConsole
     {
-        private string apiKey = "AIzaSyC92K2xdQh4r3tfJQPJJ4dOWCymDuPX8-o";
-        private string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
+        private string _apiKey = "AIzaSyAPYXovjVADpIHMEvkSemGyUpKSVWgwH8s";
+        private string _url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
+        private readonly Core.ILogger _logger;
 
         [Serializable]
         public class GeminiResponse
@@ -52,32 +51,18 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
             public int y;
         }
 
-        private readonly Checkerboard _board;
-
-        public AIPlayer(Checkerboard board)
+        public AIConsole(ILogger logger)
         {
-            _board = board;
+            _logger = logger;
         }
 
-        public void HaltTurn()
+        public async Task<Tuple<int, int>> RequestStonePoint(int stoneType, int[][] array, CancellationToken token)
         {
-
-        }
-
-        public bool IsStoneOwner(int stoneType)
-        {
-            return stoneType == StoneType.White;
-        }
-
-        public async void StartTurn()
-        {
-            Debug.Log($"AI Turn started.");
             try
             {
                 var whiteStones = new List<int[]>();
                 var blackStones = new List<int[]>();
 
-                var array = _board.ToArray();
                 for (var i = 0; i < array.Length; i++)
                 {
                     for (var j = 0; j < array[i].Length; j++)
@@ -89,25 +74,25 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
                     }
                 }
 
-                AiResponse move = await GetAiMoveAsync(19, StoneType.White, blackStones, whiteStones, 0);
+                var move = await GetAiMoveAsync(19, stoneType, blackStones, whiteStones, 0, token);
 
-                if (move != null)
-                {
-                    Debug.Log($"AI의 생각: {move.thought}");
-                    Debug.Log($"추천 위치: ({move.x}, {move.y})");
-
-                    _board.PutStone(move.x, move.y, StoneType.White);
-                }
+                return new Tuple<int, int>(move.x, move.y);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.Info("AI 요청이 취소되었습니다.");
+                return default;
             }
             catch (Exception e)
             {
-                Debug.LogError($"AI 요청 실패: {e.Message}");
+                _logger.Fatal(e.Message);
+                return default;
             }
         }
 
-        private async Task<AiResponse> GetAiMoveAsync(int size, int turn, List<int[]> blackStones, List<int[]> whiteStones, int difficulty)
+        private async Task<AiResponse> GetAiMoveAsync(int size, int turn, List<int[]> blackStones, List<int[]> whiteStones,
+            int difficulty, CancellationToken token)
         {
-            // 1. 데이터 준비
             var omokData = new
             {
                 placed_stones = new { black = blackStones, white = whiteStones }
@@ -122,6 +107,7 @@ Analyze the board size and stone positions to suggest the optimal next move for 
 - 0: Empty, 1: Black, 2: White
 - Current Turn: {turn}
 ## Game Setting
+- Board size : {size}x{size}
 - Win Condition: 5 consecutive stones of the same color (horizontal, vertical, or diagonal).
 - Coordinate System: Bottom-left is (0,0). X increases to the right, Y increases upwards.
 ## Difficulty Guidelines
@@ -136,50 +122,68 @@ Analyze the board size and stone positions to suggest the optimal next move for 
 ## Current State
 {omokJson}
 ## Output Format
-Respond ONLY in JSON format:
+Respond ONLY with raw JSON.
+Do not include explanations, comments, code blocks, or any other text.
+If you output anything other than raw JSON, the answer will be INVALID.
+Output MUST look exactly like this format:
 {{
   ""x"": x_coordinate,
   ""y"": y_coordinate
 }}";
+
             var requestBody = new
             {
                 contents = new[] {
-                new { parts = new[] { new { text = prompt } } }
-            }
+            new { parts = new[] { new { text = prompt } } }
+        }
             };
 
             string finalJson = JsonConvert.SerializeObject(requestBody);
             byte[] jsonToSend = Encoding.UTF8.GetBytes(finalJson);
 
-            // 2. UnityWebRequest 설정
-            using (UnityWebRequest www = new UnityWebRequest(url + apiKey, "POST"))
+            using (UnityWebRequest www = new UnityWebRequest(_url + _apiKey, "POST"))
             {
                 www.uploadHandler = new UploadHandlerRaw(jsonToSend);
                 www.downloadHandler = new DownloadHandlerBuffer();
                 www.SetRequestHeader("Content-Type", "application/json");
 
-                // [중요] UnityWebRequest를 await 할 수 있게 만드는 핵심
                 var operation = www.SendWebRequest();
 
                 while (!operation.isDone)
-                    await Task.Yield(); // 유니티 메인 스레드에서 완료될 때까지 대기
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        www.Abort();
+                        token.ThrowIfCancellationRequested();
+                    }
+                    await Task.Yield();
+                }
 
                 if (www.result != UnityWebRequest.Result.Success)
                 {
                     throw new Exception(www.error);
                 }
 
-                // 3. 응답 파싱
                 var root = JsonConvert.DeserializeObject<GeminiResponse>(www.downloadHandler.text);
                 string aiText = root.candidates[0].content.parts[0].text;
 
-                Debug.Log(aiText);
-
-                // 마크다운 태그 제거 후 파싱
                 string cleanedJson = aiText.Replace("```json", "").Replace("```", "").Trim();
+                cleanedJson = ExtractJson(cleanedJson);
+
+                _logger.Info(cleanedJson);
 
                 return JsonConvert.DeserializeObject<AiResponse>(cleanedJson);
             }
+        }
+
+        public static string ExtractJson(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+
+            var match = Regex.Match(input, @"\{[\s\S]*\}", RegexOptions.Singleline);
+
+            return match.Success ? match.Value : string.Empty;
         }
     }
 }

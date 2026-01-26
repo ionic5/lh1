@@ -1,4 +1,5 @@
 ﻿using LikeLion.LH1.Client.Core.OmokScene;
+using LikeLion.LH1.Client.UnityWorld.OmokScene;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -19,8 +20,10 @@ namespace LikeLion.LH1.Client.UnityWorld
         {
             var time = new Time();
             var board = new Core.OmokScene.Checkerboard(_checkerboard);
+            var logger = new DebugLogger();
 
-            var aiPlayer = new LikeLion.LH1.Client.UnityWorld.OmokScene.AIPlayer(board);
+            var aiConsole = new AIConsole(logger);
+            var aiPlayer = new AIPlayer(board, aiConsole);
             var mainPlayer = new MainPlayer(board);
             var players = new List<IPlayer>
             {
