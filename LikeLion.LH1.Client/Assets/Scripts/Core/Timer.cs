@@ -123,5 +123,10 @@ namespace LikeLion.LH1.Client.Core
             _activeIndexes.Clear();
             _finishedIndexes.Clear();
         }
+
+        public float GetRemainTime(int index)
+        {
+            return _timerEntries[index].RemainTime;
+        }
     }
 }

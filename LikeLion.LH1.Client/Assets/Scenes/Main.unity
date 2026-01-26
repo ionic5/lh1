@@ -2433,8 +2433,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2057735960}
+  - component: {fileID: 2057735961}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: MainUIPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2463,6 +2464,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2057735961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057735959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4726de64545a7145980df8ea9163afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _remainTimeText: {fileID: 740974142}
 --- !u!1 &2136029219
 GameObject:
   m_ObjectHideFlags: 0
@@ -2508,6 +2522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _checkerboard: {fileID: 125884466}
+  _mainUIPanel: {fileID: 2057735961}
   _loop: {fileID: 248683229}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

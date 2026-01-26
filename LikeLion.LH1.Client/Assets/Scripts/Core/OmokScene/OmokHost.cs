@@ -1,11 +1,12 @@
-﻿using System;
+﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
-    public class OmokHost
+    public class OmokHost : IUpdatable
     {
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
@@ -13,20 +14,23 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         private readonly List<IPlayer> _players;
         private readonly Core.Timer _timer;
         private readonly float _limitTime;
+        private readonly IMainUIPanel _mainUIPanel;
 
-        public OmokHost(Checkerboard checkerboard, List<IPlayer> players, Timer timer, float limitTime)
+        public OmokHost(Checkerboard checkerboard, List<IPlayer> players, Timer timer, float limitTime, IMainUIPanel mainUIPanel)
         {
             _checkerboard = checkerboard;
             _players = players;
             _timer = timer;
             _limitTime = limitTime;
             _checkerboard.StonePuttedEvent += OnStonePuttedEvent;
+            _mainUIPanel = mainUIPanel;
         }
 
         public void Start()
         {
             var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));
             StartTurn(player);
+
         }
 
         private void OnStonePuttedEvent(object sender, StonePuttedEventArgs args)
@@ -108,6 +112,11 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             }
 
             return count == 5;
+        }
+
+        public void Update()
+        {
+            _mainUIPanel.SetRemainTime(_timer.GetRemainTime(0));
         }
     }
 }
