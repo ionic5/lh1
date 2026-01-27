@@ -100,36 +100,17 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
 
             string omokJson = JsonConvert.SerializeObject(omokData);
             string prompt = $@"
-## Role
-You are a Gomoku (Five in a Row) Player. 
-Analyze the board size and stone positions to suggest the optimal next move for victory.
-## Input Data Format
-- 0: Empty, 1: Black, 2: White
-- Current Turn: {turn}
-## Game Setting
-- Board size : {size}x{size}
-- Win Condition: 5 consecutive stones of the same color (horizontal, vertical, or diagonal).
-- Coordinate System: Bottom-left is (0,0). X increases to the right, Y increases upwards.
-## Difficulty Guidelines
-0 : Defensive focus. Blocks opponent's 3 or 4 in a row and connects own stones visible on the surface.
-1 : Aggressive play. Builds up for 3-3 or 4-3 threats and preemptively blocks opponent's strategic paths.
-2 : Advanced tactics. Considers Renju rules (forbidden moves), performs deep look-ahead (VCF, VCT), and induces winning sequences.
-## Task
-1. Map the entire board state mentally based on the provided stone positions.
-2. Determine whether to block the opponent's threats or create a winning formation (e.g., 4-3) for the current stone ({{StoneType}}).
-3. Select the single best move according to the Difficulty Level: {difficulty}.
-4. You MUST NOT place a stone where one already exists.
-## Current State
-{omokJson}
-## Output Format
-Respond ONLY with raw JSON.
-Do not include explanations, comments, code blocks, or any other text.
-If you output anything other than raw JSON, the answer will be INVALID.
-Output MUST look exactly like this format:
-{{
-  ""x"": x_coordinate,
-  ""y"": y_coordinate
-}}";
+## Role: Gomoku Expert (Fast Mode)
+## Task: Return only the next move coordinate in JSON.
+## Game Rule: {size}x{size}, (0,0) is bottom-left. Win at 5 in a row.
+## Difficulty: {difficulty} (0:Defensive, 1:Aggressive, 2:Tactical/VCT)
+## Input: Turn {turn}, State: {omokJson}
+
+## Strict Constraint:
+1. No thinking process.
+2. No explanation.
+3. No code blocks (```json).
+4. Output ONLY: {{""x"": x, ""y"": y}}";
 
             var requestBody = new
             {
