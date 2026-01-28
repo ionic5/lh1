@@ -16,6 +16,8 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         private StonePanel _mainPlayerStonePanel;
         [SerializeField]
         private TurnAlarmPanel _turnAlarmPanel;
+        [SerializeField]
+        private ResultPanel _resultPanel;
 
         public void SetRemainTime(float remainTime)
         {
@@ -35,6 +37,12 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         public void SetCurrentPlayerStone(int stoneType)
         {
             _currentPlayerStonePanel.SetStone(stoneType);
+        }
+
+        public void ShowResultPanel(bool isWin)
+        {
+            _resultPanel.gameObject.SetActive(true);
+            _resultPanel.SetResult(isWin);
         }
     }
 }

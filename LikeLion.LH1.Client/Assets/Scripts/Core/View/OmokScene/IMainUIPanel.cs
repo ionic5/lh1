@@ -12,5 +12,6 @@ namespace LikeLion.LH1.Client.Core.View.OmokScene
         void PlayTurnStartAnimation(int stoneType);
         void SetRemainTime(float remainTime);
         void SetCurrentPlayerStone(int stoneType);
+        void ShowResultPanel(bool isWin);
     }
 }

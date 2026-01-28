@@ -41,7 +41,7 @@ namespace LikeLion.LH1.Client.UnityWorld
             host.Start();
             host.GameFinishedEvent += (sender, args) =>
             {
-                Debug.Log($"GameFinished. Win {args.WinnerStone}");
+                _mainUIPanel.ShowResultPanel(mainPlayer.IsStoneOwner(args.WinnerStone));
             };
         }
     }
