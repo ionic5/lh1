@@ -33,5 +33,10 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         {
             _cts?.Cancel();
         }
+
+        public int GetStoneType()
+        {
+            return StoneType.White;
+        }
     }
 }

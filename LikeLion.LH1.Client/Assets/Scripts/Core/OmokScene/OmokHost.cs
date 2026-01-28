@@ -30,7 +30,6 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         {
             var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));
             StartTurn(player);
-
         }
 
         private void OnStonePuttedEvent(object sender, StonePuttedEventArgs args)
@@ -51,6 +50,9 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 
         private void StartTurn(IPlayer player)
         {
+            _mainUIPanel.PlayTurnStartAnimation(player.GetStoneType());
+            _mainUIPanel.SetCurrentPlayerStone(player.GetStoneType());
+
             player.StartTurn();
 
             _timer.Stop(0);

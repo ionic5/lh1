@@ -34,5 +34,10 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         {
             _board.PutStone(args.Column, args.Row, StoneType.Black);
         }
+
+        public int GetStoneType()
+        {
+            return StoneType.Black;
+        }
     }
 }

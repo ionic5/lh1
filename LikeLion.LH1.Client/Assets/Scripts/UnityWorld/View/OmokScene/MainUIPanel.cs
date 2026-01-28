@@ -10,9 +10,31 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         [SerializeField]
         private TMP_Text _remainTimeText;
 
+        [SerializeField]
+        private StonePanel _currentPlayerStonePanel;
+        [SerializeField]
+        private StonePanel _mainPlayerStonePanel;
+        [SerializeField]
+        private TurnAlarmPanel _turnAlarmPanel;
+
         public void SetRemainTime(float remainTime)
         {
             _remainTimeText.text = ((int)remainTime).ToString();
+        }
+
+        public void SetMainPlayerStone(int stoneType)
+        {
+            _mainPlayerStonePanel.SetStone(stoneType);
+        }
+
+        public void PlayTurnStartAnimation(int stoneType)
+        {
+            _turnAlarmPanel.Play(stoneType);
+        }
+
+        public void SetCurrentPlayerStone(int stoneType)
+        {
+            _currentPlayerStonePanel.SetStone(stoneType);
         }
     }
 }

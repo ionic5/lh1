@@ -36,6 +36,8 @@ namespace LikeLion.LH1.Client.UnityWorld
             var host = new OmokHost(board, players, new Core.Timer(time, _loop), 60, _mainUIPanel);
             _loop.Add(host);
 
+            _mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
+
             host.Start();
             host.GameFinishedEvent += (sender, args) =>
             {
