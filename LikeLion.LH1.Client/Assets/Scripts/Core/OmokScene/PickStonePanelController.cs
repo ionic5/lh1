@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+using System;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
@@ -6,23 +7,40 @@ namespace LikeLion.LH1.Client.Core.OmokScene
     {
         private readonly IPlayer _opponentPlayer;
         private readonly IPlayer _mainPlayer;
+        private readonly OmokHost _omokHost;
+        private readonly IPickStonePanel _pickStonePanel;
 
-        public PickStonePanelController(IPlayer mainPlayer, IPlayer opponentPlayer)
+        public PickStonePanelController(IPlayer mainPlayer, IPlayer opponentPlayer, OmokHost omokHost, IPickStonePanel pickStonePanel)
         {
             _mainPlayer = mainPlayer;
             _opponentPlayer = opponentPlayer;
+            _omokHost = omokHost;
+            _pickStonePanel = pickStonePanel;
+
+            _pickStonePanel.BlackStoneButtonClickedEvent += OnBlackStoneButtonClickedEvent;
+            _pickStonePanel.WhiteStoneButtonClickedEvent += OnWhiteStoneButtonClickedEvent;
         }
 
         public void OnWhiteStoneButtonClickedEvent(object sender, EventArgs args)
         {
-            _mainPlayer.SetStone(StoneType.White);
-            _opponentPlayer.SetStone(StoneType.Black);
+            AssignStones(StoneType.White);
         }
 
         public void OnBlackStoneButtonClickedEvent(object sender, EventArgs args)
         {
-            _mainPlayer.SetStone(StoneType.Black);
-            _opponentPlayer.SetStone(StoneType.White);
+            AssignStones(StoneType.Black);
+        }
+
+        private void AssignStones(int mainPlayerStone)
+        {
+            _mainPlayer.SetStone(mainPlayerStone);
+            _opponentPlayer.SetStone(mainPlayerStone == StoneType.White ? StoneType.Black : StoneType.White);
+
+            _pickStonePanel.BlackStoneButtonClickedEvent -= OnBlackStoneButtonClickedEvent;
+            _pickStonePanel.WhiteStoneButtonClickedEvent -= OnWhiteStoneButtonClickedEvent;
+            _pickStonePanel.Hide();
+
+            _omokHost.Start();
         }
     }
 }
