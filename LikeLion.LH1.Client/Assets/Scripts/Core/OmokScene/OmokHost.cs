@@ -45,6 +45,7 @@ namespace LikeLion.LH1.Client.Core.OmokScene
                 return;
             }
 
+            _timer.Stop(0);
             GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs { WinnerStone = winnerStone });
         }
 
@@ -61,7 +62,7 @@ namespace LikeLion.LH1.Client.Core.OmokScene
                 player.HaltTurn();
 
                 var otherPlayer = _players.First(entry => entry != player);
-                otherPlayer.StartTurn();
+                StartTurn(otherPlayer);
             });
         }
 
@@ -118,7 +119,8 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 
         public void Update()
         {
-            _mainUIPanel.SetRemainTime(_timer.GetRemainTime(0));
+            if (_timer.IsRunning(0))
+                _mainUIPanel.SetRemainTime(_timer.GetRemainTime(0));
         }
     }
 }
