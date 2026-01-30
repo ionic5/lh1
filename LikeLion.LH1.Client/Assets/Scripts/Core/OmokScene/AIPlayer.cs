@@ -1,9 +1,8 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
-    public class AIPlayer : IPlayer
+    public class AIPlayer : Player, IPlayer
     {
         private readonly Checkerboard _board;
         private readonly IAIConsole _aiConsole;
@@ -14,11 +13,6 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             _board = board;
             _aiConsole = aiConsole;
             _cts = null;
-        }
-
-        public bool IsStoneOwner(int stoneType)
-        {
-            return StoneType.White == stoneType;
         }
 
         public async void StartTurn()
@@ -35,11 +29,6 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         public void HaltTurn()
         {
             _cts?.Cancel();
-        }
-
-        public int GetStoneType()
-        {
-            return StoneType.White;
         }
     }
 }

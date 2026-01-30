@@ -11,6 +11,7 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         int GetStoneType();
         void HaltTurn();
         bool IsStoneOwner(int stoneType);
+        void SetStone(int white);
         void StartTurn();
     }
 }
