@@ -47,5 +47,14 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 
             StonePuttedEvent?.Invoke(this, new StonePuttedEventArgs { StoneType = stoneType });
         }
+
+        public void Clear()
+        {
+            for (int i = 0; i < 19; i++)
+                for (int j = 0; j < 19; j++)
+                    _board[i][j] = StoneType.Null;
+
+            _checkerboardView.Clear();
+        }
     }
 }

@@ -26,6 +26,12 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             _mainUIPanel = mainUIPanel;
         }
 
+        public void Restart()
+        {
+            _checkerboard.Clear();
+            Start();
+        }
+
         public void Start()
         {
             var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));

@@ -1,6 +1,8 @@
 using LikeLion.LH1.Client.Core.OmokScene;
 using LikeLion.LH1.Client.Core.View.OmokScene;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -31,6 +33,8 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
         [SerializeField]
         private ObjectPool _whiteStonePool;
 
+        private List<Tuple<int, GameObject>> _activeStones;
+
         private System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>> _stonePoints;
 
         public event EventHandler<Core.View.OmokScene.StonePointClickedEventArgs> StonePointClickedEvent;
@@ -40,6 +44,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
             int rows = (int)_checkerboardSize.x;
             int cols = (int)_checkerboardSize.y;
 
+            _activeStones = new List<Tuple<int, GameObject>>();
             _stonePoints = new System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>>();
 
             BuildCheckerboard(rows, cols);
@@ -139,6 +144,19 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
             var pos = _stonePoints[row][column].transform.localPosition;
             stone.transform.localPosition = new Vector3(pos.x, 0.6f, pos.z);
+        }
+
+        public void Clear()
+        {
+            foreach (var entry in _activeStones)
+            {
+                if (entry.Item1 == StoneType.White)
+                    _whiteStonePool.Return(entry.Item2);
+                else if (entry.Item1 == StoneType.Black)
+                    _blackStonePool.Return(entry.Item2);
+            }
+
+            _activeStones.Clear();
         }
     }
 }
