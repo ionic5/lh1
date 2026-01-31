@@ -39,10 +39,14 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
             _currentPlayerStonePanel.SetStone(stoneType);
         }
 
-        public IResultPanel ShowResultPanel()
+        public void Hide()
         {
-            _resultPanel.gameObject.SetActive(true);
-            return _resultPanel;
+            gameObject.SetActive(false);
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
         }
     }
 }

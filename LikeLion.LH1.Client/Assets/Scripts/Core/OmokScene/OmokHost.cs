@@ -8,6 +8,7 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 {
     public class OmokHost : IUpdatable
     {
+        public event EventHandler<EventArgs> StartGameEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
         private readonly Checkerboard _checkerboard;
@@ -29,11 +30,14 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         public void Restart()
         {
             _checkerboard.Clear();
+
             Start();
         }
 
         public void Start()
         {
+            StartGameEvent?.Invoke(this, EventArgs.Empty);
+
             var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));
             StartTurn(player);
         }

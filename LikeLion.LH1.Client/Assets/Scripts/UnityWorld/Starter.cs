@@ -1,4 +1,5 @@
 ﻿using LikeLion.LH1.Client.Core.OmokScene;
+using LikeLion.LH1.Client.Core.View.OmokScene;
 using LikeLion.LH1.Client.UnityWorld.OmokScene;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace LikeLion.LH1.Client.UnityWorld
         private View.OmokScene.Checkerboard _checkerboard;
         [SerializeField]
         private View.OmokScene.MainUIPanel _mainUIPanel;
+        [SerializeField]
+        private View.OmokScene.PanelStack _panelStack;
         [SerializeField]
         private Loop _loop;
 
@@ -34,18 +37,23 @@ namespace LikeLion.LH1.Client.UnityWorld
             };
 
             var host = new OmokHost(board, players, new Core.Timer(time, _loop), 60, _mainUIPanel);
-            _loop.Add(host);
-
-            _mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
-
-            host.Start();
+            host.StartGameEvent += (sender, args) =>
+            {
+                _mainUIPanel.Show();
+                _mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
+            };
             host.GameFinishedEvent += (sender, args) =>
             {
-                var panel = _mainUIPanel.ShowResultPanel();
+                _mainUIPanel.Hide();
 
+                var panel = _panelStack.ShowResultPanel();
                 panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
                 var ctrl = new ResultPanelController(host, panel);
             };
+            _loop.Add(host);
+
+            IPickStonePanel pickStonePanel = _panelStack.ShowPickStonePanel();
+            var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
         }
     }
 }

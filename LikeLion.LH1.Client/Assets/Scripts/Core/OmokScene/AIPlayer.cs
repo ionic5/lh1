@@ -19,11 +19,11 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         {
             _cts = new CancellationTokenSource();
 
-            var point = await _aiConsole.RequestStonePoint(StoneType.White, _board.ToArray(), _cts.Token);
+            var point = await _aiConsole.RequestStonePoint(GetStoneType(), _board.ToArray(), _cts.Token);
             if (point == null)
                 return;
 
-            _board.PutStone(point.Item1, point.Item2, StoneType.White);
+            _board.PutStone(point.Item1, point.Item2, GetStoneType());
         }
 
         public void HaltTurn()

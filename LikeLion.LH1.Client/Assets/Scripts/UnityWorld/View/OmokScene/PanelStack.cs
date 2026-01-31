@@ -1,0 +1,30 @@
+﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
+{
+    public class PanelStack : MonoBehaviour
+    {
+        [SerializeField]
+        private ResultPanel _resultPanel;
+        [SerializeField]
+        private PickStonePanel _pickStonePanel;
+
+        public IResultPanel ShowResultPanel()
+        {
+            _resultPanel.gameObject.SetActive(true);
+            return _resultPanel;
+        }
+
+        public IPickStonePanel ShowPickStonePanel()
+        {
+            _pickStonePanel.gameObject.SetActive(true);
+            return _pickStonePanel;
+        }
+    }
+}
