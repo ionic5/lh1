@@ -21,7 +21,7 @@
 
         public void OnStonePointClickedEvent(object sender, StonePointClickedEventArgs args)
         {
-            _board.PutStone(args.Column, args.Row, GetStoneType());
+            _board.TryPutStone(args.Column, args.Row, GetStoneType());
         }
     }
 }

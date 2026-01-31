@@ -23,7 +23,9 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             if (point == null)
                 return;
 
-            _board.PutStone(point.Item1, point.Item2, GetStoneType());
+            var column = point.Item1;
+            var row = point.Item2;
+            _board.TryPutStone(column, row, GetStoneType());
         }
 
         public void HaltTurn()

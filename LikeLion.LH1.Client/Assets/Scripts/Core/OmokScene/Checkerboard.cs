@@ -43,18 +43,19 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             return _board.Select(row => row.ToArray()).ToArray();
         }
 
-        public void PutStone(int column, int row, int stoneType)
+        public bool TryPutStone(int column, int row, int stoneType)
         {
             if (_board[column][row] != StoneType.Null)
             {
-                _logger.Fatal($"Stone already exists at this position. Current board state : {ToArray()} StoneType : {stoneType}");
-                return;
+                _logger.Warn("Attempted to place a stone on a non-empty point. Ignored.");
+                return false;
             }
 
             _board[column][row] = stoneType;
             _checkerboardView.PutStone(column, row, stoneType);
 
             StonePuttedEvent?.Invoke(this, new StonePuttedEventArgs { StoneType = stoneType });
+            return true;
         }
 
         public void Clear()
