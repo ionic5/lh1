@@ -27,11 +27,9 @@ namespace LikeLion.LH1.Client.Core.OmokScene
             _mainUIPanel = mainUIPanel;
         }
 
-        public void Restart()
+        public void Reset()
         {
             _checkerboard.Clear();
-
-            Start();
         }
 
         public void Start()

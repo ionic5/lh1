@@ -24,8 +24,8 @@ namespace LikeLion.LH1.Client.UnityWorld
         private void Start()
         {
             var time = new Time();
-            var board = new Core.OmokScene.Checkerboard(_checkerboard);
             var logger = new DebugLogger();
+            var board = new Core.OmokScene.Checkerboard(_checkerboard, logger);
 
             var aiConsole = new AIConsole(logger);
             var aiPlayer = new AIPlayer(board, aiConsole);
@@ -36,7 +36,14 @@ namespace LikeLion.LH1.Client.UnityWorld
                 aiPlayer
             };
 
-            var host = new OmokHost(board, players, new Core.Timer(time, _loop), 60, _mainUIPanel);
+            var host = new OmokHost(board, players, new Core.Timer(time, _loop), 5, _mainUIPanel);
+
+            Action showPickStonePanel = () =>
+            {
+                IPickStonePanel pickStonePanel = _panelStack.ShowPickStonePanel();
+                var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
+            };
+
             host.StartGameEvent += (sender, args) =>
             {
                 _mainUIPanel.Show();
@@ -48,12 +55,11 @@ namespace LikeLion.LH1.Client.UnityWorld
 
                 var panel = _panelStack.ShowResultPanel();
                 panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
-                var ctrl = new ResultPanelController(host, panel);
+                var ctrl = new ResultPanelController(host, panel, showPickStonePanel);
             };
             _loop.Add(host);
 
-            IPickStonePanel pickStonePanel = _panelStack.ShowPickStonePanel();
-            var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
+            showPickStonePanel.Invoke();
         }
     }
 }

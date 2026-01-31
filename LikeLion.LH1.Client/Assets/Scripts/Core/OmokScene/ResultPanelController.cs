@@ -1,9 +1,5 @@
 ﻿using LikeLion.LH1.Client.Core.View.OmokScene;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LikeLion.LH1.Client.Core.OmokScene
 {
@@ -11,21 +7,25 @@ namespace LikeLion.LH1.Client.Core.OmokScene
     {
         private readonly OmokHost _omokHost;
         private readonly IResultPanel _panel;
+        private readonly Action _showPickStonePanel;
 
-        public ResultPanelController(OmokHost omokHost, IResultPanel panel)
+        public ResultPanelController(OmokHost omokHost, IResultPanel panel, Action showPickStonePanel)
         {
             _omokHost = omokHost;
             _panel = panel;
 
-            _panel.RestartButtonClickedEvent += OnResultButtonClickedEvent;
+            _panel.RestartButtonClickedEvent += OnRestartButtonClickedEvent;
+            _showPickStonePanel = showPickStonePanel;
         }
 
-        public void OnResultButtonClickedEvent(object sender, EventArgs args)
+        public void OnRestartButtonClickedEvent(object sender, EventArgs args)
         {
-            _panel.RestartButtonClickedEvent -= OnResultButtonClickedEvent;
+            _panel.RestartButtonClickedEvent -= OnRestartButtonClickedEvent;
             _panel.Hide();
 
-            _omokHost.Restart();
+            _omokHost.Reset();
+
+            _showPickStonePanel.Invoke();
         }
     }
 }

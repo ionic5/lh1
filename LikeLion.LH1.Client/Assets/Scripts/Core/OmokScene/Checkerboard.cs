@@ -9,11 +9,12 @@ namespace LikeLion.LH1.Client.Core.OmokScene
     {
         private readonly List<List<int>> _board;
         private readonly ICheckerboard _checkerboardView;
+        private readonly Core.ILogger _logger;
 
         public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
         public event EventHandler<StonePuttedEventArgs> StonePuttedEvent;
 
-        public Checkerboard(ICheckerboard checkerboardView)
+        public Checkerboard(ICheckerboard checkerboardView, ILogger logger)
         {
             _checkerboardView = checkerboardView;
             _checkerboardView.StonePointClickedEvent += (sender, args) =>
@@ -33,6 +34,8 @@ namespace LikeLion.LH1.Client.Core.OmokScene
                     row.Add(StoneType.Null);
                 _board.Add(row);
             }
+
+            _logger = logger;
         }
 
         public int[][] ToArray()
@@ -42,6 +45,12 @@ namespace LikeLion.LH1.Client.Core.OmokScene
 
         public void PutStone(int column, int row, int stoneType)
         {
+            if (_board[column][row] != StoneType.Null)
+            {
+                _logger.Fatal($"Stone already exists at this position. Current board state : {ToArray()} StoneType : {stoneType}");
+                return;
+            }
+
             _board[column][row] = stoneType;
             _checkerboardView.PutStone(column, row, stoneType);
 
