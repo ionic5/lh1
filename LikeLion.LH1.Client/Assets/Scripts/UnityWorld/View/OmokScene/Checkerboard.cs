@@ -1,6 +1,5 @@
 using LikeLion.LH1.Client.Core.OmokScene;
 using LikeLion.LH1.Client.Core.View.OmokScene;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -141,7 +140,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
             if (stone == null)
                 return;
-            
+
             _activeStones.Add(new Tuple<int, GameObject>(stoneType, stone));
 
             var pos = _stonePoints[row][column].transform.localPosition;

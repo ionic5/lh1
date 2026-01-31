@@ -150,7 +150,7 @@ namespace LikeLion.LH1.Client.UnityWorld.OmokScene
 
                 string cleanedJson = aiText.Replace("```json", "").Replace("```", "").Trim();
                 cleanedJson = ExtractJson(cleanedJson);
-                
+
                 _logger.Info(omokJson);
                 _logger.Info(cleanedJson);
 
