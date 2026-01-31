@@ -1,8 +1,4 @@
-﻿using LikeLion.LH1.Client.Core.OmokScene;
-using LikeLion.LH1.Client.Core.View.OmokScene;
-using LikeLion.LH1.Client.UnityWorld.OmokScene;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
 namespace LikeLion.LH1.Client.UnityWorld
@@ -17,46 +13,22 @@ namespace LikeLion.LH1.Client.UnityWorld
         private View.OmokScene.PanelStack _panelStack;
         [SerializeField]
         private Loop _loop;
+        [SerializeField]
+        private Screen _screen;
 
         private void Start()
         {
             var time = new Time();
             var logger = new DebugLogger();
-            var board = new Core.OmokScene.Checkerboard(_checkerboard, logger);
+            var assetLoader = new AssetLoader(logger);
 
-            var aiConsole = new AIConsole(logger);
-            var aiPlayer = new AIPlayer(board, aiConsole);
-            var mainPlayer = new MainPlayer(board);
-            var players = new List<IPlayer>
-            {
-                mainPlayer,
-                aiPlayer
-            };
+            _screen.Logger = logger;
+            _screen.AssetLoader = assetLoader;
 
-            var host = new OmokHost(board, players, new Core.Timer(time, _loop), 5, _mainUIPanel);
+            var gameSceneLoader = new GameSceneLoader(_screen, logger, time);
+            var titleSceneLoader = new TitleSceneLoader(_screen, () => { gameSceneLoader.Load(); });
 
-            Action showPickStonePanel = () =>
-            {
-                IPickStonePanel pickStonePanel = _panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
-            };
-
-            host.StartGameEvent += (sender, args) =>
-            {
-                _mainUIPanel.Show();
-                _mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
-            };
-            host.GameFinishedEvent += (sender, args) =>
-            {
-                _mainUIPanel.Hide();
-
-                var panel = _panelStack.ShowResultPanel();
-                panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
-                var ctrl = new ResultPanelController(host, panel, showPickStonePanel);
-            };
-            _loop.Add(host);
-
-            showPickStonePanel.Invoke();
+            titleSceneLoader.Load();
         }
     }
 }
