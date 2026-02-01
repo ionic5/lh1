@@ -1,27 +1,53 @@
-﻿namespace LikeLion.LH1.Client.Core.GameScene
+﻿using System;
+
+namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class MainPlayer : Player, IPlayer
     {
         private readonly Checkerboard _board;
+        private bool _isDestroyed;
+        private bool _isMyTurn;
+
+        public event EventHandler<DestroyEventArgs> DestroyEvent;
 
         public MainPlayer(Checkerboard board)
         {
             _board = board;
+            _isDestroyed = false;
+            _isMyTurn = false;
+
+            _board.StonePointClickedEvent += OnStonePointClickedEvent;
         }
 
         public void StartTurn()
         {
-            _board.StonePointClickedEvent += OnStonePointClickedEvent;
+            _isMyTurn = true;
         }
 
         public void HaltTurn()
         {
-            _board.StonePointClickedEvent -= OnStonePointClickedEvent;
+            _isMyTurn = false;
         }
 
-        public void OnStonePointClickedEvent(object sender, StonePointClickedEventArgs args)
+        private void OnStonePointClickedEvent(object sender, StonePointClickedEventArgs args)
         {
+            if (!_isMyTurn)
+                return;
+
             _board.TryPutStone(args.Column, args.Row, GetStoneType());
+        }
+
+        public void Destroy()
+        {
+            if (_isDestroyed)
+                return;
+            _isDestroyed = true;
+
+            DestroyEvent?.Invoke(this, new DestroyEventArgs(this));
+            DestroyEvent = null;
+
+            _isMyTurn = false;
+            _board.StonePointClickedEvent -= OnStonePointClickedEvent;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace LikeLion.LH1.Client.Core.GameScene
 {
-    public interface IPlayer
+    public interface IPlayer : IDestroyable
     {
         int GetStoneType();
         void HaltTurn();

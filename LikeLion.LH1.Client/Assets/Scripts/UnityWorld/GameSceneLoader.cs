@@ -38,7 +38,7 @@ namespace LikeLion.LH1.Client.UnityWorld
             var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
 
             var aiConsole = new AIConsole(_logger);
-            var aiPlayer = new AIPlayer(board, aiConsole);
+            var aiPlayer = new AIPlayer(board, aiConsole, _logger);
             var mainPlayer = new MainPlayer(board);
             var players = new List<IPlayer>
             {
