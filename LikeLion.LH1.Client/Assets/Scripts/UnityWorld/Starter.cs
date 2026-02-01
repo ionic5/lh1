@@ -6,14 +6,6 @@ namespace LikeLion.LH1.Client.UnityWorld
     public class Starter : MonoBehaviour
     {
         [SerializeField]
-        private View.OmokScene.Checkerboard _checkerboard;
-        [SerializeField]
-        private View.OmokScene.MainUIPanel _mainUIPanel;
-        [SerializeField]
-        private View.OmokScene.PanelStack _panelStack;
-        [SerializeField]
-        private Loop _loop;
-        [SerializeField]
         private Screen _screen;
 
         private void Start()
@@ -29,6 +21,8 @@ namespace LikeLion.LH1.Client.UnityWorld
             var titleSceneLoader = new TitleSceneLoader(_screen, () => { gameSceneLoader.Load(); });
 
             titleSceneLoader.Load();
+
+            Destroy(gameObject);
         }
     }
 }
