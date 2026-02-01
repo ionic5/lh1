@@ -2,7 +2,7 @@
 
 namespace LikeLion.LH1.Client.Core.View.GameScene
 {
-    public interface IPickStonePanel
+    public interface IPickStonePanel : IDestroyable
     {
         event EventHandler WhiteStoneButtonClickedEvent;
         event EventHandler BlackStoneButtonClickedEvent;

@@ -19,6 +19,19 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
             _pickStonePanel.BlackStoneButtonClickedEvent += OnBlackStoneButtonClickedEvent;
             _pickStonePanel.WhiteStoneButtonClickedEvent += OnWhiteStoneButtonClickedEvent;
+            _pickStonePanel.DestroyEvent += OnDestroyPanelEvent;
+        }
+
+        private void OnDestroyPanelEvent(object sender, DestroyEventArgs e)
+        {
+            DetachEventHandlers();
+        }
+
+        private void DetachEventHandlers()
+        {
+            _pickStonePanel.BlackStoneButtonClickedEvent -= OnBlackStoneButtonClickedEvent;
+            _pickStonePanel.WhiteStoneButtonClickedEvent -= OnWhiteStoneButtonClickedEvent;
+            _pickStonePanel.DestroyEvent -= OnDestroyPanelEvent;
         }
 
         public void OnWhiteStoneButtonClickedEvent(object sender, EventArgs args)
@@ -36,8 +49,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _mainPlayer.SetStone(mainPlayerStone);
             _opponentPlayer.SetStone(mainPlayerStone == StoneType.White ? StoneType.Black : StoneType.White);
 
-            _pickStonePanel.BlackStoneButtonClickedEvent -= OnBlackStoneButtonClickedEvent;
-            _pickStonePanel.WhiteStoneButtonClickedEvent -= OnWhiteStoneButtonClickedEvent;
+            DetachEventHandlers();
+
             _pickStonePanel.Hide();
 
             _omokHost.Start();
