@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.UnityWorld.View.Scenes;
-using LikeLion.LH1.Client.Core;
+﻿using LikeLion.LH1.Client.Core;
 using LikeLion.LH1.Client.Core.GameScene;
 using LikeLion.LH1.Client.Core.View.GameScene;
 using LikeLion.LH1.Client.UnityWorld.GameScene;
@@ -29,7 +28,7 @@ namespace LikeLion.LH1.Client.UnityWorld
             _screen.DestroyLastScene();
 
             var instance = await _screen.AttachNewScene("Assets/Addressables/GameScene.prefab");
-            var scene = instance.GetComponent<Assets.Scripts.UnityWorld.View.Scenes.GameScene>();
+            var scene = instance.GetComponent<View.Scenes.GameScene>();
 
             var checkerBoard = scene.CheckerBoard;
             var loop = scene.Loop;
