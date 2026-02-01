@@ -80,7 +80,7 @@ namespace LikeLion.LH1.Client.UnityWorld.GameScene
             }
             catch (OperationCanceledException)
             {
-                _logger.Info("AI 요청이 취소되었습니다.");
+                _logger.Info("AI request was canceled.");
                 return default;
             }
             catch (Exception e)
