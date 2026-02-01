@@ -7,7 +7,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class GameHost : IUpdatable
     {
-        public event EventHandler<EventArgs> StartGameEvent;
+        public event EventHandler StartGameEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
         private readonly Checkerboard _checkerboard;
@@ -128,6 +128,13 @@ namespace LikeLion.LH1.Client.Core.GameScene
         {
             if (_timer.IsRunning(0))
                 _mainUIPanel.SetRemainTime(_timer.GetRemainTime(0));
+        }
+
+        public void Destroy()
+        {
+            StartGameEvent = null;
+            GameFinishedEvent = null;
+            _checkerboard.StonePuttedEvent -= OnStonePuttedEvent;
         }
     }
 }

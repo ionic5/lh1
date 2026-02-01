@@ -38,7 +38,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
             Destroy();
         }
 
-        private void Destroy()
+        public void Destroy()
         {
             if (_isDestroyed)
                 return;

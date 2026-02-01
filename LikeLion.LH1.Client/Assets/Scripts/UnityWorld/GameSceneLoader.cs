@@ -37,8 +37,7 @@ namespace LikeLion.LH1.Client.UnityWorld
 
             var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
 
-            var aiConsole = new AIConsole(_logger);
-            var aiPlayer = new AIPlayer(board, aiConsole, _logger);
+            var aiPlayer = new AIPlayer(board, new AIConsole(_logger), _logger);
             var mainPlayer = new MainPlayer(board);
             var players = new List<IPlayer>
             {
@@ -53,13 +52,12 @@ namespace LikeLion.LH1.Client.UnityWorld
                 IPickStonePanel pickStonePanel = panelStack.ShowPickStonePanel();
                 var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
             };
-
-            host.StartGameEvent += (sender, args) =>
+            EventHandler startGameEvtHdlr = (sender, args) =>
             {
                 mainUIPanel.Show();
                 mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
             };
-            host.GameFinishedEvent += (sender, args) =>
+            EventHandler<GameFinishedEventArgs> gameFinishedEvtHdlr = (sender, args) =>
             {
                 mainUIPanel.Hide();
 
@@ -67,7 +65,27 @@ namespace LikeLion.LH1.Client.UnityWorld
                 panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
                 var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
             };
+            host.StartGameEvent += startGameEvtHdlr;
+            host.GameFinishedEvent += gameFinishedEvtHdlr;
             loop.Add(host);
+
+            EventHandler<DestroyEventArgs> destroySceneEvtHdlr = null;
+            destroySceneEvtHdlr = (sender, args) =>
+            {
+                scene.DestroyEvent -= destroySceneEvtHdlr;
+
+                host.StartGameEvent -= startGameEvtHdlr;
+                host.GameFinishedEvent -= gameFinishedEvtHdlr;
+                loop.Remove(host);
+                host.Destroy();
+
+                foreach (var entry in players)
+                    entry.Destroy();
+                players.Clear();
+
+                board.Destroy();
+            };
+            scene.DestroyEvent += destroySceneEvtHdlr;
 
             showPickStonePanel.Invoke();
 
