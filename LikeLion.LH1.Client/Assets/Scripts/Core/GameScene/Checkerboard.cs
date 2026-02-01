@@ -10,6 +10,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly List<List<int>> _board;
         private readonly ICheckerboard _checkerboardView;
         private readonly Core.ILogger _logger;
+        private bool _isDestroyed;
 
         public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
         public event EventHandler<StonePuttedEventArgs> StonePuttedEvent;
@@ -17,14 +18,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public Checkerboard(ICheckerboard checkerboardView, ILogger logger)
         {
             _checkerboardView = checkerboardView;
-            _checkerboardView.StonePointClickedEvent += (sender, args) =>
-            {
-                StonePointClickedEvent?.Invoke(this, new StonePointClickedEventArgs
-                {
-                    Row = args.Row,
-                    Column = args.Column
-                });
-            };
+            _checkerboardView.StonePointClickedEvent += OnStonePointClickedEvent;
+            _checkerboardView.DestroyEvent += OnDestroyViewEvent;
 
             _board = new List<List<int>>();
             for (int i = 0; i < 19; i++)
@@ -36,6 +31,33 @@ namespace LikeLion.LH1.Client.Core.GameScene
             }
 
             _logger = logger;
+        }
+
+        private void OnDestroyViewEvent(object sender, DestroyEventArgs e)
+        {
+            Destroy();
+        }
+
+        private void Destroy()
+        {
+            if (_isDestroyed)
+                return;
+            _isDestroyed = true;
+
+            _checkerboardView.StonePointClickedEvent -= OnStonePointClickedEvent;
+            _checkerboardView.DestroyEvent -= OnDestroyViewEvent;
+            _checkerboardView.Destroy();
+
+            _board.Clear();
+        }
+
+        private void OnStonePointClickedEvent(object sender, View.GameScene.StonePointClickedEventArgs args)
+        {
+            StonePointClickedEvent?.Invoke(this, new StonePointClickedEventArgs
+            {
+                Row = args.Row,
+                Column = args.Column
+            });
         }
 
         public int[][] ToArray()

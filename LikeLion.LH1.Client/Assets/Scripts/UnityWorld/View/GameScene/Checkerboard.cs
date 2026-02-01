@@ -1,3 +1,4 @@
+using LikeLion.LH1.Client.Core;
 using LikeLion.LH1.Client.Core.GameScene;
 using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
@@ -35,8 +36,10 @@ namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
         private List<Tuple<int, GameObject>> _activeStones;
 
         private System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>> _stonePoints;
+        private bool _isDestroyed;
 
         public event EventHandler<Core.View.GameScene.StonePointClickedEventArgs> StonePointClickedEvent;
+        public event EventHandler<DestroyEventArgs> DestroyEvent;
 
         void Start()
         {
@@ -158,6 +161,25 @@ namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
             }
 
             _activeStones.Clear();
+        }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            if (_isDestroyed)
+                return;
+            _isDestroyed = true;
+
+            DestroyEvent?.Invoke(this, new DestroyEventArgs(this));
+            DestroyEvent = null;
+
+            StonePointClickedEvent = null;
+            _activeStones.Clear();
+            _stonePoints.Clear();
         }
     }
 }
