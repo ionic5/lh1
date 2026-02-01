@@ -45,7 +45,7 @@ namespace LikeLion.LH1.Client.UnityWorld
                 aiPlayer
             };
 
-            var host = new GameHost(board, players, new Core.Timer(_time, loop), 5, mainUIPanel);
+            var host = new GameHost(board, players, new Core.Timer(_time, loop), 60, mainUIPanel);
 
             Action showPickStonePanel = () =>
             {
