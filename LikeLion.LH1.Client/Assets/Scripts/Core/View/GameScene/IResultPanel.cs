@@ -2,7 +2,7 @@
 
 namespace LikeLion.LH1.Client.Core.View.GameScene
 {
-    public interface IResultPanel
+    public interface IResultPanel : IDestroyable
     {
         event EventHandler RestartButtonClickedEvent;
         event EventHandler ToTitleButtonClickedEvent;

@@ -18,8 +18,22 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
             _panel.RestartButtonClickedEvent += OnRestartButtonClickedEvent;
             _panel.ToTitleButtonClickedEvent += OnToTitleButtonClickedEvent;
+            _panel.DestroyEvent += OnDestroyPanelEvent;
+
             _showPickStonePanel = showPickStonePanel;
             _loadTitleScene = loadTitleScene;
+        }
+
+        private void OnDestroyPanelEvent(object sender, DestroyEventArgs e)
+        {
+            DetachEventHandlers();
+        }
+
+        private void DetachEventHandlers()
+        {
+            _panel.RestartButtonClickedEvent -= OnRestartButtonClickedEvent;
+            _panel.ToTitleButtonClickedEvent -= OnToTitleButtonClickedEvent;
+            _panel.DestroyEvent -= OnDestroyPanelEvent;
         }
 
         private void OnToTitleButtonClickedEvent(object sender, EventArgs e)
@@ -40,8 +54,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         private void HidePanel()
         {
-            _panel.ToTitleButtonClickedEvent -= OnToTitleButtonClickedEvent;
-            _panel.RestartButtonClickedEvent -= OnRestartButtonClickedEvent;
+            DetachEventHandlers();
+
             _panel.Hide();
         }
     }
