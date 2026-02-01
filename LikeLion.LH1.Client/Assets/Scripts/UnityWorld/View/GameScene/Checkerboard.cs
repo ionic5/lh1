@@ -1,11 +1,11 @@
-using LikeLion.LH1.Client.Core.OmokScene;
-using LikeLion.LH1.Client.Core.View.OmokScene;
+using LikeLion.LH1.Client.Core.GameScene;
+using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
+namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
 {
     public class Checkerboard : MonoBehaviour, ICheckerboard
     {
@@ -36,7 +36,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
 
         private System.Collections.Generic.List<System.Collections.Generic.List<StonePoint>> _stonePoints;
 
-        public event EventHandler<Core.View.OmokScene.StonePointClickedEventArgs> StonePointClickedEvent;
+        public event EventHandler<Core.View.GameScene.StonePointClickedEventArgs> StonePointClickedEvent;
 
         void Start()
         {
@@ -120,7 +120,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
                     int col = x;
                     stonePt.ClickedEvent += (sender, args) =>
                     {
-                        StonePointClickedEvent?.Invoke(this, new Core.View.OmokScene.StonePointClickedEventArgs()
+                        StonePointClickedEvent?.Invoke(this, new Core.View.GameScene.StonePointClickedEventArgs()
                         {
                             Row = row,
                             Column = col,

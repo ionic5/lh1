@@ -1,16 +1,16 @@
-﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 
-namespace LikeLion.LH1.Client.Core.OmokScene
+namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class PickStonePanelController
     {
         private readonly IPlayer _opponentPlayer;
         private readonly IPlayer _mainPlayer;
-        private readonly OmokHost _omokHost;
+        private readonly GameHost _omokHost;
         private readonly IPickStonePanel _pickStonePanel;
 
-        public PickStonePanelController(IPlayer mainPlayer, IPlayer opponentPlayer, OmokHost omokHost, IPickStonePanel pickStonePanel)
+        public PickStonePanelController(IPlayer mainPlayer, IPlayer opponentPlayer, GameHost omokHost, IPickStonePanel pickStonePanel)
         {
             _mainPlayer = mainPlayer;
             _opponentPlayer = opponentPlayer;

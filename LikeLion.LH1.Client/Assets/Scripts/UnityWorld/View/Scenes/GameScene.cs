@@ -1,5 +1,5 @@
 ﻿using LikeLion.LH1.Client.UnityWorld;
-using LikeLion.LH1.Client.UnityWorld.View.OmokScene;
+using LikeLion.LH1.Client.UnityWorld.View.GameScene;
 
 namespace Assets.Scripts.UnityWorld.View.Scenes
 {

@@ -1,7 +1,7 @@
-﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using UnityEngine;
 
-namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
+namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
 {
     public class PanelStack : MonoBehaviour
     {

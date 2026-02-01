@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace LikeLion.LH1.Client.Core.OmokScene
+namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class AIPlayer : Player, IPlayer
     {

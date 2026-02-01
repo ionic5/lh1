@@ -1,15 +1,15 @@
-﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 
-namespace LikeLion.LH1.Client.Core.OmokScene
+namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class ResultPanelController
     {
-        private readonly OmokHost _omokHost;
+        private readonly GameHost _omokHost;
         private readonly IResultPanel _panel;
         private readonly Action _showPickStonePanel;
 
-        public ResultPanelController(OmokHost omokHost, IResultPanel panel, Action showPickStonePanel)
+        public ResultPanelController(GameHost omokHost, IResultPanel panel, Action showPickStonePanel)
         {
             _omokHost = omokHost;
             _panel = panel;

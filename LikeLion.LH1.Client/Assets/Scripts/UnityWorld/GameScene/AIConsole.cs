@@ -1,5 +1,5 @@
 ﻿using LikeLion.LH1.Client.Core;
-using LikeLion.LH1.Client.Core.OmokScene;
+using LikeLion.LH1.Client.Core.GameScene;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,11 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 
-namespace LikeLion.LH1.Client.UnityWorld.OmokScene
+namespace LikeLion.LH1.Client.UnityWorld.GameScene
 {
     public class AIConsole : IAIConsole
     {
-        private string _apiKey = "AIzaSyAPYXovjVADpIHMEvkSemGyUpKSVWgwH8s";
+        private string _apiKey = "AIzaSyCsnmhTolefpbPPM5LqQqXDV2FxinfQkTE";
         private string _url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
         private readonly Core.ILogger _logger;
 

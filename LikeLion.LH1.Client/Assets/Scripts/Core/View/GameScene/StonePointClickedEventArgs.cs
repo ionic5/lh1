@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LikeLion.LH1.Client.Core.View.OmokScene
+namespace LikeLion.LH1.Client.Core.View.GameScene
 {
     public class StonePointClickedEventArgs : EventArgs
     {

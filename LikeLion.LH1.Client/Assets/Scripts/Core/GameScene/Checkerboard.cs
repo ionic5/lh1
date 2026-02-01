@@ -1,9 +1,9 @@
-﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LikeLion.LH1.Client.Core.OmokScene
+namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class Checkerboard
     {

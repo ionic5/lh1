@@ -1,8 +1,8 @@
-﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 using UnityEngine;
 
-namespace LikeLion.LH1.Client.UnityWorld.View.OmokScene
+namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
 {
     public class PickStonePanel : MonoBehaviour, IPickStonePanel
     {

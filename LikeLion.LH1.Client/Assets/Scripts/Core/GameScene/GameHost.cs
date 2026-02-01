@@ -1,11 +1,11 @@
-﻿using LikeLion.LH1.Client.Core.View.OmokScene;
+﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LikeLion.LH1.Client.Core.OmokScene
+namespace LikeLion.LH1.Client.Core.GameScene
 {
-    public class OmokHost : IUpdatable
+    public class GameHost : IUpdatable
     {
         public event EventHandler<EventArgs> StartGameEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
@@ -16,7 +16,7 @@ namespace LikeLion.LH1.Client.Core.OmokScene
         private readonly float _limitTime;
         private readonly IMainUIPanel _mainUIPanel;
 
-        public OmokHost(Checkerboard checkerboard, List<IPlayer> players, Timer timer, float limitTime, IMainUIPanel mainUIPanel)
+        public GameHost(Checkerboard checkerboard, List<IPlayer> players, Timer timer, float limitTime, IMainUIPanel mainUIPanel)
         {
             _checkerboard = checkerboard;
             _players = players;
