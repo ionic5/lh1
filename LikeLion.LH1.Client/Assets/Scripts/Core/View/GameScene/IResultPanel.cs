@@ -5,6 +5,7 @@ namespace LikeLion.LH1.Client.Core.View.GameScene
     public interface IResultPanel
     {
         event EventHandler RestartButtonClickedEvent;
+        event EventHandler ToTitleButtonClickedEvent;
 
         void Hide();
         void SetResult(bool v);

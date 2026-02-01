@@ -13,12 +13,14 @@ namespace LikeLion.LH1.Client.UnityWorld
         private readonly Screen _screen;
         private readonly Core.ILogger _logger;
         private readonly ITime _time;
+        private readonly Action _loadTitleScene;
 
-        public GameSceneLoader(Screen screen, ILogger logger, ITime time)
+        public GameSceneLoader(Screen screen, ILogger logger, ITime time, Action loadTitleScene)
         {
             _screen = screen;
             _logger = logger;
             _time = time;
+            _loadTitleScene = loadTitleScene;
         }
 
         public async void Load()
@@ -64,7 +66,7 @@ namespace LikeLion.LH1.Client.UnityWorld
 
                 var panel = panelStack.ShowResultPanel();
                 panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
-                var ctrl = new ResultPanelController(host, panel, showPickStonePanel);
+                var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
             };
             loop.Add(host);
 

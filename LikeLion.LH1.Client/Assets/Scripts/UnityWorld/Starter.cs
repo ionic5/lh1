@@ -17,8 +17,14 @@ namespace LikeLion.LH1.Client.UnityWorld
             _screen.Logger = logger;
             _screen.AssetLoader = assetLoader;
 
-            var gameSceneLoader = new GameSceneLoader(_screen, logger, time);
-            var titleSceneLoader = new TitleSceneLoader(_screen, () => { gameSceneLoader.Load(); });
+            Action loadTitleScene = null;
+            Action loadGameScene = null;
+
+            var gameSceneLoader = new GameSceneLoader(_screen, logger, time, () => { loadTitleScene.Invoke(); });
+            var titleSceneLoader = new TitleSceneLoader(_screen, () => { loadGameScene.Invoke(); });
+
+            loadTitleScene = titleSceneLoader.Load;
+            loadGameScene = gameSceneLoader.Load;
 
             titleSceneLoader.Load();
 

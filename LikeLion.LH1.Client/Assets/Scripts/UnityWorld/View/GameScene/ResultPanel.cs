@@ -12,6 +12,7 @@ namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
         private GameObject _losePanel;
 
         public event EventHandler RestartButtonClickedEvent;
+        public event EventHandler ToTitleButtonClickedEvent;
 
         public void SetResult(bool isWin)
         {
@@ -22,6 +23,11 @@ namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
         public void OnRestartButtonClicked()
         {
             RestartButtonClickedEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void OnToTitleButtonClicked()
+        {
+            ToTitleButtonClickedEvent?.Invoke(this, EventArgs.Empty);
         }
 
         public void Hide()

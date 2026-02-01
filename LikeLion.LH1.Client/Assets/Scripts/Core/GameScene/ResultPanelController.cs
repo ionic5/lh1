@@ -8,24 +8,41 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly GameHost _omokHost;
         private readonly IResultPanel _panel;
         private readonly Action _showPickStonePanel;
+        private readonly Action _loadTitleScene;
 
-        public ResultPanelController(GameHost omokHost, IResultPanel panel, Action showPickStonePanel)
+        public ResultPanelController(GameHost omokHost, IResultPanel panel,
+            Action showPickStonePanel, Action loadTitleScene)
         {
             _omokHost = omokHost;
             _panel = panel;
 
             _panel.RestartButtonClickedEvent += OnRestartButtonClickedEvent;
+            _panel.ToTitleButtonClickedEvent += OnToTitleButtonClickedEvent;
             _showPickStonePanel = showPickStonePanel;
+            _loadTitleScene = loadTitleScene;
+        }
+
+        private void OnToTitleButtonClickedEvent(object sender, EventArgs e)
+        {
+            HidePanel();
+
+            _loadTitleScene.Invoke();
         }
 
         public void OnRestartButtonClickedEvent(object sender, EventArgs args)
         {
-            _panel.RestartButtonClickedEvent -= OnRestartButtonClickedEvent;
-            _panel.Hide();
+            HidePanel();
 
             _omokHost.Reset();
 
             _showPickStonePanel.Invoke();
+        }
+
+        private void HidePanel()
+        {
+            _panel.ToTitleButtonClickedEvent -= OnToTitleButtonClickedEvent;
+            _panel.RestartButtonClickedEvent -= OnRestartButtonClickedEvent;
+            _panel.Hide();
         }
     }
 }
