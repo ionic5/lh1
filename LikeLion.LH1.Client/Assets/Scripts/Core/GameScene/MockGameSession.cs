@@ -10,7 +10,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
     {
         public event EventHandler ConnectedEvent;
         public event EventHandler GameStartedEvent;
-        public event EventHandler TurnStartedEvent;
+        public event EventHandler PlayerTurnStartedEvent;
         public event EventHandler TurnFinishedEvent;
         public event EventHandler GameFinishedEvent;
         public event EventHandler StonePuttedEvent;
