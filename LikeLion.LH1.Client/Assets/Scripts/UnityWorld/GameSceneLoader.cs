@@ -87,7 +87,25 @@ namespace LikeLion.LH1.Client.UnityWorld
             };
             scene.DestroyEvent += destroySceneEvtHdlr;
 
-            showPickStonePanel.Invoke();
+            var session = new MockGameSession();
+
+            EventHandler connectedHdlr = null;
+            connectedHdlr = (sender, args) =>
+            {
+                session.ConnectedEvent -= connectedHdlr;
+            };
+            session.ConnectedEvent += connectedHdlr;
+
+            EventHandler gameStartedHdlr = null;
+            gameStartedHdlr = (sender, args) =>
+            {
+                session.GameStartedEvent -= gameStartedHdlr;
+
+                showPickStonePanel.Invoke();
+            };
+            session.GameStartedEvent += gameStartedHdlr;
+
+            session.RequestConnect();
 
             _screen.HideLoadingBlind();
         }

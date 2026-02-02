@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace LikeLion.LH1.Client.Core
+namespace LikeLion.LH1.Client.Core.GameScene
 {
     public interface IAIConsole
     {
