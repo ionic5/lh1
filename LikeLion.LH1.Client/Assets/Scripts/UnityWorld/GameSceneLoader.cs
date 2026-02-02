@@ -35,77 +35,77 @@ namespace LikeLion.LH1.Client.UnityWorld
             var mainUIPanel = scene.MainUIPanel;
             var panelStack = scene.PanelStack;
 
-            var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
+            //var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
 
-            var aiPlayer = new AIPlayer(board, new AIConsole(_logger), _logger);
-            var mainPlayer = new MainPlayer(board);
-            var players = new List<IPlayer>
-            {
-                mainPlayer,
-                aiPlayer
-            };
+            //var aiPlayer = new AIPlayer(board, new AIConsole(_logger), _logger);
+            //var mainPlayer = new MainPlayer(board);
+            //var players = new List<IPlayer>
+            //{
+            //    mainPlayer,
+            //    aiPlayer
+            //};
 
-            var host = new GameHost(board, players, new Core.Timer(_time, loop), 60, mainUIPanel);
+            //var host = new GameHost(board, players, new Core.Timer(_time, loop), 60, mainUIPanel);
 
-            Action showPickStonePanel = () =>
-            {
-                IPickStonePanel pickStonePanel = panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
-            };
-            EventHandler startGameEvtHdlr = (sender, args) =>
-            {
-                mainUIPanel.Show();
-                mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
-            };
-            EventHandler<GameFinishedEventArgs> gameFinishedEvtHdlr = (sender, args) =>
-            {
-                mainUIPanel.Hide();
+            //Action showPickStonePanel = () =>
+            //{
+            //    IPickStonePanel pickStonePanel = panelStack.ShowPickStonePanel();
+            //    var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
+            //};
+            //EventHandler startGameEvtHdlr = (sender, args) =>
+            //{
+            //    mainUIPanel.Show();
+            //    mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
+            //};
+            //EventHandler<GameFinishedEventArgs> gameFinishedEvtHdlr = (sender, args) =>
+            //{
+            //    mainUIPanel.Hide();
 
-                var panel = panelStack.ShowResultPanel();
-                panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
-                var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
-            };
-            host.StartGameEvent += startGameEvtHdlr;
-            host.GameFinishedEvent += gameFinishedEvtHdlr;
-            loop.Add(host);
+            //    var panel = panelStack.ShowResultPanel();
+            //    panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
+            //    var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
+            //};
+            //host.StartGameEvent += startGameEvtHdlr;
+            //host.GameFinishedEvent += gameFinishedEvtHdlr;
+            //loop.Add(host);
 
-            EventHandler<DestroyEventArgs> destroySceneEvtHdlr = null;
-            destroySceneEvtHdlr = (sender, args) =>
-            {
-                scene.DestroyEvent -= destroySceneEvtHdlr;
+            //EventHandler<DestroyEventArgs> destroySceneEvtHdlr = null;
+            //destroySceneEvtHdlr = (sender, args) =>
+            //{
+            //    scene.DestroyEvent -= destroySceneEvtHdlr;
 
-                host.StartGameEvent -= startGameEvtHdlr;
-                host.GameFinishedEvent -= gameFinishedEvtHdlr;
-                loop.Remove(host);
-                host.Destroy();
+            //    host.StartGameEvent -= startGameEvtHdlr;
+            //    host.GameFinishedEvent -= gameFinishedEvtHdlr;
+            //    loop.Remove(host);
+            //    host.Destroy();
 
-                foreach (var entry in players)
-                    entry.Destroy();
-                players.Clear();
+            //    foreach (var entry in players)
+            //        entry.Destroy();
+            //    players.Clear();
 
-                board.Destroy();
-            };
-            scene.DestroyEvent += destroySceneEvtHdlr;
+            //    board.Destroy();
+            //};
+            //scene.DestroyEvent += destroySceneEvtHdlr;
 
-            var session = new MockGameSession();
+            //var session = new MockGameSession();
 
-            EventHandler connectedHdlr = null;
-            connectedHdlr = (sender, args) =>
-            {
-                session.ConnectedEvent -= connectedHdlr;
-            };
-            session.ConnectedEvent += connectedHdlr;
+            //EventHandler connectedHdlr = null;
+            //connectedHdlr = (sender, args) =>
+            //{
+            //    session.ConnectedEvent -= connectedHdlr;
+            //};
+            //session.ConnectedEvent += connectedHdlr;
 
-            EventHandler gameStartedHdlr = null;
-            gameStartedHdlr = (sender, args) =>
-            {
-                session.GameStartedEvent -= gameStartedHdlr;
+            //EventHandler gameStartedHdlr = null;
+            //gameStartedHdlr = (sender, args) =>
+            //{
+            //    session.GameStartedEvent -= gameStartedHdlr;
 
-                showPickStonePanel.Invoke();
-            };
-            session.GameStartedEvent += gameStartedHdlr;
+            //    showPickStonePanel.Invoke();
+            //};
+            //session.GameStartedEvent += gameStartedHdlr;
 
-            session.RequestConnect();
+            //session.RequestConnect();
 
             _screen.HideLoadingBlind();
         }

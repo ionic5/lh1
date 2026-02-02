@@ -11,6 +11,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         event EventHandler<PlayerTurnFinishedEventArgs> PlayerTurnFinishedEvent;
         event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
+        void PutStone(int column, int row);
         void RequestConnect();
         void RequestGame(string v);
         void StartGame(string gameGuid, string v);

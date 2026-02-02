@@ -8,9 +8,20 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly IPlayer _player;
         private readonly Action _showPickStonePanel;
         private readonly Action<bool> _showResultPanel;
-
         private string _gameGuid;
         private bool _isDestroyed;
+
+        public GameFlowController(IGameSession gameSession, IPlayer player,
+            Action showPickStonePanel, Action<bool> showResultPanel)
+        {
+            _gameSession = gameSession;
+            _player = player;
+            _showPickStonePanel = showPickStonePanel;
+            _showResultPanel = showResultPanel;
+
+            _gameGuid = string.Empty;
+            _isDestroyed = false;
+        }
 
         public void Start()
         {

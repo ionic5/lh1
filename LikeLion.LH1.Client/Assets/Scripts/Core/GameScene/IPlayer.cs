@@ -5,9 +5,9 @@
         void SetPlayerGuid(string playerGuid);
         string GetPlayerGuid();
         int GetStoneType();
-        void HaltTurn();
+        void SetStone(int stoneType);
         bool IsStoneOwner(int stoneType);
-        void SetStone(int white);
         void StartTurn();
+        void HaltTurn();
     }
 }

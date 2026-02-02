@@ -88,5 +88,10 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
             _checkerboardView.Clear();
         }
+
+        public bool IsStonePointEmpty(int column, int row)
+        {
+            return _board[column][row] == StoneType.Null;
+        }
     }
 }
