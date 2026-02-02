@@ -27,8 +27,20 @@ namespace LikeLion.LH1.Client.Core.GameScene
         }
 
         public MockGameSession()
+        public MockGameSession(IAIConsole aiConsole, Timer timer)
         {
             _players = new List<Player>();
+            _aiConsole = aiConsole;
+            _timer = timer;
+
+            _board = new List<List<int>>();
+            for (int i = 0; i < 19; i++)
+            {
+                List<int> row = new List<int>();
+                for (int j = 0; j < 19; j++)
+                    row.Add(StoneType.Null);
+                _board.Add(row);
+            }
         }
 
         public void PickStone(string gameGuid, string playerGuid, int stoneType)
@@ -50,22 +62,27 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
             _timer.Stop(0);
 
+            PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
+            {
+                PlayerGuid = playerGuid,
+                StoneType = stoneType,
+                Column = column,
+                Row = row
+            });
+
             var winnerStone = CheckWinner(_board.Select(row => row.ToArray()).ToArray());
             if (winnerStone == StoneType.Null)
             {
                 PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
                 {
                     PlayerGuid = playerGuid,
-                    StoneType = stoneType,
-                    Column = column,
-                    Row = row
-                });
-
                 var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
                 StartTurn(otherPlayerGuid);
             }
             else
             {
+                PlayerTurnStartedEvent -= OnPlayerTurnStartedEvent;
+
                 var winner = _players.Where(entry => entry.StoneType == winnerStone).First();
                 GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs
                 {
@@ -94,6 +111,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
         {
             var player = _players.First(entry => entry.StoneType == StoneType.Black);
 
+            PlayerTurnStartedEvent += OnPlayerTurnStartedEvent;
+
             StartTurn(player.PlayerGuid);
         }
 
@@ -110,6 +129,9 @@ namespace LikeLion.LH1.Client.Core.GameScene
                     Column = -1,
                     Row = -1
                 });
+
+                var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
+                StartTurn(otherPlayerGuid);
             });
         }
 
@@ -126,10 +148,11 @@ namespace LikeLion.LH1.Client.Core.GameScene
                 cts?.Dispose();
             });
 
-            var point = await _aiConsole.RequestStonePoint(player.StoneType, new int[19][], cts.Token);
+            var point = await _aiConsole.RequestStonePoint(player.StoneType, _board.Select(row => row.ToArray()).ToArray(), cts.Token);
 
             _timer.Stop(1);
-
+            if (point == null)
+                return;
             PutStone(_gameGuid, player.PlayerGuid, point.Item1, point.Item2);
         }
 

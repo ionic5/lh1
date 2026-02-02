@@ -35,14 +35,21 @@ namespace LikeLion.LH1.Client.UnityWorld
             var mainUIPanel = scene.MainUIPanel;
             var panelStack = scene.PanelStack;
 
-            var gameSession = new MockGameSession();
+            var gameSession = new MockGameSession(new AIConsole(_logger), new Core.Timer(_time, loop));
             var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
             var player = new MainPlayer(board, gameSession);
+
+            gameSession.PlayerTurnFinishedEvent += (sender, args) =>
+            {
+                if (args.StoneType == StoneType.Null)
+                    return;
+                board.TryPutStone(args.Column, args.Row, args.StoneType);
+            };
 
             Action showPickStonePanel = () =>
             {
                 var pickStonePanel = panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(player, pickStonePanel);
+                var ctrl = new PickStonePanelController(player, pickStonePanel, gameSession);
             };
 
             Action<bool> showResultPanel = (isWinner) =>

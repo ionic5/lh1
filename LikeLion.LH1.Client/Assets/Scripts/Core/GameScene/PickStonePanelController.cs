@@ -9,16 +9,18 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly IPickStonePanel _pickStonePanel;
         private readonly IGameSession _gameSession;
 
-        public PickStonePanelController(IPlayer mainPlayer, IPickStonePanel pickStonePanel)
+        public PickStonePanelController(IPlayer mainPlayer, IPickStonePanel pickStonePanel, IGameSession gameSession)
         {
             _mainPlayer = mainPlayer;
             _pickStonePanel = pickStonePanel;
+            _gameSession = gameSession;
 
             _pickStonePanel.BlackStoneButtonClickedEvent += OnBlackStoneButtonClickedEvent;
             _pickStonePanel.WhiteStoneButtonClickedEvent += OnWhiteStoneButtonClickedEvent;
             _pickStonePanel.DestroyEvent += OnDestroyPanelEvent;
 
             _gameSession.GamePreparedEvent += OnGamePreparedEvent;
+            _gameSession = gameSession;
         }
 
         private void OnGamePreparedEvent(object sender, EventArgs e)
