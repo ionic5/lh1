@@ -5,21 +5,27 @@ namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class PickStonePanelController
     {
-        private readonly IPlayer _opponentPlayer;
         private readonly IPlayer _mainPlayer;
-        private readonly GameHost _omokHost;
         private readonly IPickStonePanel _pickStonePanel;
+        private readonly IGameSession _gameSession;
 
-        public PickStonePanelController(IPlayer mainPlayer, IPlayer opponentPlayer, GameHost omokHost, IPickStonePanel pickStonePanel)
+        public PickStonePanelController(IPlayer mainPlayer, IPickStonePanel pickStonePanel)
         {
             _mainPlayer = mainPlayer;
-            _opponentPlayer = opponentPlayer;
-            _omokHost = omokHost;
             _pickStonePanel = pickStonePanel;
 
             _pickStonePanel.BlackStoneButtonClickedEvent += OnBlackStoneButtonClickedEvent;
             _pickStonePanel.WhiteStoneButtonClickedEvent += OnWhiteStoneButtonClickedEvent;
             _pickStonePanel.DestroyEvent += OnDestroyPanelEvent;
+
+            _gameSession.GamePreparedEvent += OnGamePreparedEvent;
+        }
+
+        private void OnGamePreparedEvent(object sender, EventArgs e)
+        {
+            DetachEventHandlers();
+
+            _pickStonePanel.Hide();
         }
 
         private void OnDestroyPanelEvent(object sender, DestroyEventArgs e)
@@ -32,28 +38,23 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _pickStonePanel.BlackStoneButtonClickedEvent -= OnBlackStoneButtonClickedEvent;
             _pickStonePanel.WhiteStoneButtonClickedEvent -= OnWhiteStoneButtonClickedEvent;
             _pickStonePanel.DestroyEvent -= OnDestroyPanelEvent;
+
+            _gameSession.GamePreparedEvent -= OnGamePreparedEvent;
         }
 
         public void OnWhiteStoneButtonClickedEvent(object sender, EventArgs args)
         {
-            AssignStones(StoneType.White);
+            PickStone(StoneType.White);
         }
 
         public void OnBlackStoneButtonClickedEvent(object sender, EventArgs args)
         {
-            AssignStones(StoneType.Black);
+            PickStone(StoneType.Black);
         }
 
-        private void AssignStones(int mainPlayerStone)
+        private void PickStone(int stoneType)
         {
-            _mainPlayer.SetStone(mainPlayerStone);
-            _opponentPlayer.SetStone(mainPlayerStone == StoneType.White ? StoneType.Black : StoneType.White);
-
-            DetachEventHandlers();
-
-            _pickStonePanel.Hide();
-
-            _omokHost.Start();
+            _gameSession.PickStone(_mainPlayer.GetGameGuid(), _mainPlayer.GetPlayerGuid(), stoneType);
         }
     }
 }

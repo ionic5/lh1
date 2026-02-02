@@ -11,7 +11,12 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public event EventHandler<PlayerTurnFinishedEventArgs> PlayerTurnFinishedEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
-        public void PutStone(int column, int row)
+        public void PickStone(string gameGuid, string playerGuid, int stoneType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PutStone(string gameGuid, string playerGuid, int column, int row)
         {
             throw new NotImplementedException();
         }
@@ -21,12 +26,12 @@ namespace LikeLion.LH1.Client.Core.GameScene
             throw new NotImplementedException();
         }
 
-        public void RequestGame(string v)
+        public void RequestGame(string playerGuid)
         {
             throw new NotImplementedException();
         }
 
-        public void StartGame(string gameGuid, string v)
+        public void StartGame(string gameGuid, string playerGuid)
         {
             throw new NotImplementedException();
         }

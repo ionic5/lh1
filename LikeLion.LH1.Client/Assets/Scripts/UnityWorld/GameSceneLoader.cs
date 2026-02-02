@@ -35,7 +35,26 @@ namespace LikeLion.LH1.Client.UnityWorld
             var mainUIPanel = scene.MainUIPanel;
             var panelStack = scene.PanelStack;
 
-            //var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
+            var gameSession = new MockGameSession();
+            var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
+            var player = new MainPlayer(board, gameSession);
+
+            Action showPickStonePanel = () =>
+            {
+                var pickStonePanel = panelStack.ShowPickStonePanel();
+                var ctrl = new PickStonePanelController(player, pickStonePanel);
+            };
+
+            Action<bool> showResultPanel = (isWinner) =>
+            {
+                var panel = panelStack.ShowResultPanel();
+                panel.SetResult(isWinner);
+                //var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
+            };
+
+            var flowCtrl = new GameFlowController(gameSession, player, showPickStonePanel, showResultPanel);
+
+            flowCtrl.Start();
 
             //var aiPlayer = new AIPlayer(board, new AIConsole(_logger), _logger);
             //var mainPlayer = new MainPlayer(board);
@@ -47,11 +66,7 @@ namespace LikeLion.LH1.Client.UnityWorld
 
             //var host = new GameHost(board, players, new Core.Timer(_time, loop), 60, mainUIPanel);
 
-            //Action showPickStonePanel = () =>
-            //{
-            //    IPickStonePanel pickStonePanel = panelStack.ShowPickStonePanel();
-            //    var ctrl = new PickStonePanelController(mainPlayer, aiPlayer, host, pickStonePanel);
-            //};
+
             //EventHandler startGameEvtHdlr = (sender, args) =>
             //{
             //    mainUIPanel.Show();

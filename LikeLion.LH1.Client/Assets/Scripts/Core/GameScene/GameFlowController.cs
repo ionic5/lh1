@@ -8,7 +8,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly IPlayer _player;
         private readonly Action _showPickStonePanel;
         private readonly Action<bool> _showResultPanel;
-        private string _gameGuid;
+
         private bool _isDestroyed;
 
         public GameFlowController(IGameSession gameSession, IPlayer player,
@@ -19,7 +19,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _showPickStonePanel = showPickStonePanel;
             _showResultPanel = showResultPanel;
 
-            _gameGuid = string.Empty;
             _isDestroyed = false;
         }
 
@@ -45,13 +44,14 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         private void OnGameCreatedEvent(object sender, GameCreatedEventArgs args)
         {
-            _gameGuid = args.GameGuid;
+            _player.SetGameGuid(args.GameGuid);
+
             _showPickStonePanel?.Invoke();
         }
 
         private void OnGamePreparedEvent(object sender, EventArgs args)
         {
-            _gameSession.StartGame(_gameGuid, _player.GetPlayerGuid());
+            _gameSession.StartGame(_player.GetGameGuid(), _player.GetPlayerGuid());
         }
 
         private void OnPlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs args)

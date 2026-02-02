@@ -8,6 +8,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly IGameSession _gameSession;
         private bool _isDestroyed;
         private bool _isMyTurn;
+        private string _gameGuid;
         private string _playerGuid;
         private int _stoneType;
 
@@ -58,7 +59,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
             var column = args.Column;
             var row = args.Row;
             if (_board.IsStonePointEmpty(column, row))
-                _gameSession.PutStone(column, row);
+                _gameSession.PutStone(_gameGuid, _playerGuid, column, row);
         }
 
         public void Destroy()
@@ -82,6 +83,16 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public string GetPlayerGuid()
         {
             return _playerGuid;
+        }
+
+        public string GetGameGuid()
+        {
+            return _gameGuid;
+        }
+
+        public void SetGameGuid(string gameGuid)
+        {
+            _gameGuid = gameGuid;
         }
     }
 }
