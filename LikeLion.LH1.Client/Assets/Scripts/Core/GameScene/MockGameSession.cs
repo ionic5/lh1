@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace LikeLion.LH1.Client.Core.GameScene
 {
@@ -14,8 +15,10 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
         private List<Player> _players;
-
+        private IAIConsole _aiConsole;
         private Core.Timer _timer;
+        private string _gameGuid;
+        private List<List<int>> _board;
 
         private class Player
         {
@@ -43,18 +46,33 @@ namespace LikeLion.LH1.Client.Core.GameScene
         {
             var stoneType = _players.Where(entry => entry.PlayerGuid == playerGuid).Select(entry => entry.StoneType).First();
 
+            _board[column][row] = stoneType;
+
             _timer.Stop(0);
 
-            PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
+            var winnerStone = CheckWinner(_board.Select(row => row.ToArray()).ToArray());
+            if (winnerStone == StoneType.Null)
             {
-                PlayerGuid = playerGuid,
-                StoneType = stoneType,
-                Column = column,
-                Row = row
-            });
+                PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
+                {
+                    PlayerGuid = playerGuid,
+                    StoneType = stoneType,
+                    Column = column,
+                    Row = row
+                });
 
-            var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
-            StartTurn(otherPlayerGuid);
+                var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
+                StartTurn(otherPlayerGuid);
+            }
+            else
+            {
+                var winner = _players.Where(entry => entry.StoneType == winnerStone).First();
+                GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs
+                {
+                    WinnerGuid = winner.PlayerGuid,
+                    WinnerStone = winner.StoneType
+                });
+            }
         }
 
         public void RequestConnect()
@@ -93,6 +111,77 @@ namespace LikeLion.LH1.Client.Core.GameScene
                     Row = -1
                 });
             });
+        }
+
+        private async void OnPlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs args)
+        {
+            var player = _players[1];
+            if (player.PlayerGuid != args.PlayerGuid)
+                return;
+
+            var cts = new CancellationTokenSource();
+            _timer.Start(1, 60, () =>
+            {
+                cts?.Cancel();
+                cts?.Dispose();
+            });
+
+            var point = await _aiConsole.RequestStonePoint(player.StoneType, new int[19][], cts.Token);
+
+            _timer.Stop(1);
+
+            PutStone(_gameGuid, player.PlayerGuid, point.Item1, point.Item2);
+        }
+
+        private int CheckWinner(int[][] board)
+        {
+            int rows = board.Length;
+            if (rows == 0) return StoneType.Null;
+            int cols = board[0].Length;
+
+            for (int r = 0; r < rows; r++)
+            {
+                for (int c = 0; c < cols; c++)
+                {
+                    if (board[r][c] == 0) continue;
+
+                    int stone = board[r][c];
+
+                    if (CheckDirection(board, r, c, 0, 1, stone) || // Horizontal
+                        CheckDirection(board, r, c, 1, 0, stone) || // Vertical
+                        CheckDirection(board, r, c, 1, 1, stone) || // Right down
+                        CheckDirection(board, r, c, 1, -1, stone))  // Left down
+                    {
+                        return stone;
+                    }
+                }
+            }
+
+            return StoneType.Null;
+        }
+
+        private bool CheckDirection(int[][] board, int r, int c, int dr, int dc, int stone)
+        {
+            int count = 1;
+            int rows = board.Length;
+            int cols = board[0].Length;
+
+            for (int i = 1; i < 5; i++)
+            {
+                int nr = r + (dr * i);
+                int nc = c + (dc * i);
+
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && board[nr][nc] == stone)
+                {
+                    count++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return count == 5;
         }
     }
 }
