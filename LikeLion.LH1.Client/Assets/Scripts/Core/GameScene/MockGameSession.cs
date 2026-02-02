@@ -26,7 +26,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
             public int StoneType;
         }
 
-        public MockGameSession()
         public MockGameSession(IAIConsole aiConsole, Timer timer)
         {
             _players = new List<Player>();
@@ -73,9 +72,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
             var winnerStone = CheckWinner(_board.Select(row => row.ToArray()).ToArray());
             if (winnerStone == StoneType.Null)
             {
-                PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
-                {
-                    PlayerGuid = playerGuid,
                 var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
                 StartTurn(otherPlayerGuid);
             }
