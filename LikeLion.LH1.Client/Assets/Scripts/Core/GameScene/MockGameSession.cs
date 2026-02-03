@@ -14,10 +14,10 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public event EventHandler<PlayerTurnFinishedEventArgs> PlayerTurnFinishedEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
-        private List<Player> _players;
         private IAIConsole _aiConsole;
         private Core.Timer _timer;
         private string _gameGuid;
+        private List<Player> _players;
         private List<List<int>> _board;
         private float _timeLimit;
 
@@ -44,6 +44,21 @@ namespace LikeLion.LH1.Client.Core.GameScene
             }
         }
 
+        public void RequestConnect()
+        {
+            var mainPlayer = new Player { PlayerGuid = Guid.NewGuid().ToString(), StoneType = StoneType.Null };
+            _players.Add(mainPlayer);
+
+            ConnectedEvent?.Invoke(this, new ConnectedEventArgs { PlayerGuid = mainPlayer.PlayerGuid });
+        }
+
+        public void RequestGame(string playerGuid)
+        {
+            _players.Add(new Player { PlayerGuid = Guid.NewGuid().ToString(), StoneType = StoneType.Null });
+
+            GameCreatedEvent?.Invoke(this, new GameCreatedEventArgs { GameGuid = Guid.NewGuid().ToString() });
+        }
+
         public void PickStone(string gameGuid, string playerGuid, int stoneType)
         {
             var player = _players.First(entry => entry.PlayerGuid == playerGuid);
@@ -58,6 +73,38 @@ namespace LikeLion.LH1.Client.Core.GameScene
                 new StoneOwner { PlayerGuid = otherPlayer.PlayerGuid, StoneType = otherPlayer.StoneType }
             };
             GamePreparedEvent?.Invoke(this, new GamePreparedEventArgs { StoneOwners = stoneOwners });
+        }
+
+        public void StartGame(string gameGuid, string playerGuid)
+        {
+            var player = _players.First(entry => entry.StoneType == StoneType.Black);
+
+            PlayerTurnStartedEvent += OnPlayerTurnStartedEvent;
+
+            StartTurn(player.PlayerGuid);
+        }
+
+        private void StartTurn(string playerGuid)
+        {
+            PlayerTurnStartedEvent?.Invoke(this, new PlayerTurnStartedEventArgs
+            {
+                PlayerGuid = playerGuid,
+                TimeLimit = _timeLimit
+            });
+
+            _timer.Start(0, _timeLimit, () =>
+            {
+                PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
+                {
+                    PlayerGuid = playerGuid,
+                    StoneType = StoneType.Null,
+                    Column = -1,
+                    Row = -1
+                });
+
+                var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
+                StartTurn(otherPlayerGuid);
+            });
         }
 
         public void PutStone(string gameGuid, string playerGuid, int column, int row)
@@ -97,53 +144,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
                     WinnerStone = winner.StoneType
                 });
             }
-        }
-
-        public void RequestConnect()
-        {
-            var mainPlayer = new Player { PlayerGuid = Guid.NewGuid().ToString(), StoneType = StoneType.Null };
-            _players.Add(mainPlayer);
-
-            ConnectedEvent?.Invoke(this, new ConnectedEventArgs { PlayerGuid = mainPlayer.PlayerGuid });
-        }
-
-        public void RequestGame(string playerGuid)
-        {
-            _players.Add(new Player { PlayerGuid = Guid.NewGuid().ToString(), StoneType = StoneType.Null });
-
-            GameCreatedEvent?.Invoke(this, new GameCreatedEventArgs { GameGuid = Guid.NewGuid().ToString() });
-        }
-
-        public void StartGame(string gameGuid, string playerGuid)
-        {
-            var player = _players.First(entry => entry.StoneType == StoneType.Black);
-
-            PlayerTurnStartedEvent += OnPlayerTurnStartedEvent;
-
-            StartTurn(player.PlayerGuid);
-        }
-
-        private void StartTurn(string playerGuid)
-        {
-            PlayerTurnStartedEvent?.Invoke(this, new PlayerTurnStartedEventArgs
-            {
-                PlayerGuid = playerGuid,
-                TimeLimit = _timeLimit
-            });
-
-            _timer.Start(0, _timeLimit, () =>
-            {
-                PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
-                {
-                    PlayerGuid = playerGuid,
-                    StoneType = StoneType.Null,
-                    Column = -1,
-                    Row = -1
-                });
-
-                var otherPlayerGuid = _players.Where(entry => entry.PlayerGuid != playerGuid).Select(entry => entry.PlayerGuid).First();
-                StartTurn(otherPlayerGuid);
-            });
         }
 
         private async void OnPlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs args)
