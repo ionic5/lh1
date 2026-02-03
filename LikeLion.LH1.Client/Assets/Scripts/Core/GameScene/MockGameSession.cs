@@ -16,12 +16,14 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly float _timeLimit;
         private readonly Entity.Checkerboard _checkerboard;
         private IPlayer _dummyPlayer;
+        private readonly Func<IPlayer> _createDummyPlayer;
 
-        public MockGameSession(Timer timer, Entity.Checkerboard checkerboard)
+        public MockGameSession(Timer timer, Entity.Checkerboard checkerboard, Func<IPlayer> createDummyPlayer)
         {
-            _timeLimit = 8;
+            _timeLimit = 60;
             _timer = timer;
             _checkerboard = checkerboard;
+            _createDummyPlayer = createDummyPlayer;
         }
 
         public void RequestConnect()
@@ -34,6 +36,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public void RequestGame(string playerGuid)
         {
             var dummyPlayerGuid = Guid.NewGuid().ToString();
+
+            _dummyPlayer = _createDummyPlayer();
             _dummyPlayer.SetPlayerGuid(dummyPlayerGuid);
 
             var gameGuid = Guid.NewGuid().ToString();
@@ -116,6 +120,9 @@ namespace LikeLion.LH1.Client.Core.GameScene
             {
                 PlayerTurnStartedEvent -= OnPlayerTurnStartedEvent;
                 PlayerTurnFinishedEvent -= OnPlayerTurnFinishedEvent;
+
+                _dummyPlayer.Destroy();
+                _dummyPlayer = null;
 
                 var winnerGuid = _checkerboard.GetPlayerGuid(winnerStone);
                 _checkerboard.Clear();

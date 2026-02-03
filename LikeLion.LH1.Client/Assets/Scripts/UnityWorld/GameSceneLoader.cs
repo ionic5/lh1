@@ -1,5 +1,6 @@
 ﻿using LikeLion.LH1.Client.Core;
 using LikeLion.LH1.Client.Core.GameScene;
+using LikeLion.LH1.Client.UnityWorld.GameScene;
 using System;
 
 namespace LikeLion.LH1.Client.UnityWorld
@@ -32,8 +33,18 @@ namespace LikeLion.LH1.Client.UnityWorld
             var mainUIPanel = scene.MainUIPanel;
             var panelStack = scene.PanelStack;
 
-            var gameSession = new MockGameSession(new Core.Timer(_time, loop), new Core.GameScene.Entity.Checkerboard());
-            var board = new Core.GameScene.Checkerboard(checkerBoard, new Core.GameScene.Entity.Checkerboard(), _logger);
+            IGameSession gameSession = null;
+            var mockCheckeboard = new Core.GameScene.Entity.Checkerboard();
+            gameSession = new MockGameSession(new Core.Timer(_time, loop),
+                mockCheckeboard,
+                () =>
+                {
+                    return new AIPlayer(mockCheckeboard,
+                    gameSession, new AIConsole(_logger), _logger);
+                });
+            var boardEntity = new Core.GameScene.Entity.Checkerboard();
+            boardEntity.Setup();
+            var board = new Core.GameScene.Checkerboard(checkerBoard, boardEntity, _logger);
             var player = new MainPlayer(board, gameSession);
 
             GameHost host = null;
@@ -45,7 +56,6 @@ namespace LikeLion.LH1.Client.UnityWorld
                 var ctrl = new PickStonePanelController(board, player,
                     pickStonePanel, gameSession, host.Start, _logger);
             };
-
             Action<bool> showResultPanel = (isWinner) =>
             {
                 _logger.Info("Show result panel called.");
@@ -60,76 +70,6 @@ namespace LikeLion.LH1.Client.UnityWorld
             host.Connect();
 
             loop.Add(host);
-
-            //var flowCtrl = new GameFlowController(gameSession, board, player, showPickStonePanel, showResultPanel);
-
-            //flowCtrl.Start();
-
-            //var aiPlayer = new AIPlayer(board, new AIConsole(_logger), _logger);
-            //var mainPlayer = new MainPlayer(board);
-            //var players = new List<IPlayer>
-            //{
-            //    mainPlayer,
-            //    aiPlayer
-            //};
-
-            //var host = new GameHost(board, players, new Core.Timer(_time, loop), 60, mainUIPanel);
-
-
-            //EventHandler startGameEvtHdlr = (sender, args) =>
-            //{
-            //    mainUIPanel.Show();
-            //    mainUIPanel.SetMainPlayerStone(mainPlayer.GetStoneType());
-            //};
-            //EventHandler<GameFinishedEventArgs> gameFinishedEvtHdlr = (sender, args) =>
-            //{
-            //    mainUIPanel.Hide();
-
-            //    var panel = panelStack.ShowResultPanel();
-            //    panel.SetResult(mainPlayer.IsStoneOwner(args.WinnerStone));
-            //    var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
-            //};
-            //host.StartGameEvent += startGameEvtHdlr;
-            //host.GameFinishedEvent += gameFinishedEvtHdlr;
-            //loop.Add(host);
-
-            //EventHandler<DestroyEventArgs> destroySceneEvtHdlr = null;
-            //destroySceneEvtHdlr = (sender, args) =>
-            //{
-            //    scene.DestroyEvent -= destroySceneEvtHdlr;
-
-            //    host.StartGameEvent -= startGameEvtHdlr;
-            //    host.GameFinishedEvent -= gameFinishedEvtHdlr;
-            //    loop.Remove(host);
-            //    host.Destroy();
-
-            //    foreach (var entry in players)
-            //        entry.Destroy();
-            //    players.Clear();
-
-            //    board.Destroy();
-            //};
-            //scene.DestroyEvent += destroySceneEvtHdlr;
-
-            //var session = new MockGameSession();
-
-            //EventHandler connectedHdlr = null;
-            //connectedHdlr = (sender, args) =>
-            //{
-            //    session.ConnectedEvent -= connectedHdlr;
-            //};
-            //session.ConnectedEvent += connectedHdlr;
-
-            //EventHandler gameStartedHdlr = null;
-            //gameStartedHdlr = (sender, args) =>
-            //{
-            //    session.GameStartedEvent -= gameStartedHdlr;
-
-            //    showPickStonePanel.Invoke();
-            //};
-            //session.GameStartedEvent += gameStartedHdlr;
-
-            //session.RequestConnect();
 
             _screen.HideLoadingBlind();
         }
