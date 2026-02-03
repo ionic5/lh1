@@ -6,7 +6,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
     {
         event EventHandler<ConnectedEventArgs> ConnectedEvent;
         event EventHandler<GameCreatedEventArgs> GameCreatedEvent;
-        event EventHandler GamePreparedEvent;
+        event EventHandler<GamePreparedEventArgs> GamePreparedEvent;
         event EventHandler<PlayerTurnStartedEventArgs> PlayerTurnStartedEvent;
         event EventHandler<PlayerTurnFinishedEventArgs> PlayerTurnFinishedEvent;
         event EventHandler<GameFinishedEventArgs> GameFinishedEvent;

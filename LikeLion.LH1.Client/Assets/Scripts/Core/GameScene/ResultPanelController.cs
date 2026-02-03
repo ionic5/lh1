@@ -5,24 +5,24 @@ namespace LikeLion.LH1.Client.Core.GameScene
 {
     public class ResultPanelController
     {
-        private readonly GameHost _omokHost;
+        //private readonly GameHost _omokHost;
         private readonly IResultPanel _panel;
         private readonly Action _showPickStonePanel;
         private readonly Action _loadTitleScene;
 
-        public ResultPanelController(GameHost omokHost, IResultPanel panel,
-            Action showPickStonePanel, Action loadTitleScene)
-        {
-            _omokHost = omokHost;
-            _panel = panel;
+        //public ResultPanelController(GameHost omokHost, IResultPanel panel,
+        //    Action showPickStonePanel, Action loadTitleScene)
+        //{
+        //    _omokHost = omokHost;
+        //    _panel = panel;
 
-            _panel.RestartButtonClickedEvent += OnRestartButtonClickedEvent;
-            _panel.ToTitleButtonClickedEvent += OnToTitleButtonClickedEvent;
-            _panel.DestroyEvent += OnDestroyPanelEvent;
+        //    _panel.RestartButtonClickedEvent += OnRestartButtonClickedEvent;
+        //    _panel.ToTitleButtonClickedEvent += OnToTitleButtonClickedEvent;
+        //    _panel.DestroyEvent += OnDestroyPanelEvent;
 
-            _showPickStonePanel = showPickStonePanel;
-            _loadTitleScene = loadTitleScene;
-        }
+        //    _showPickStonePanel = showPickStonePanel;
+        //    _loadTitleScene = loadTitleScene;
+        //}
 
         private void OnDestroyPanelEvent(object sender, DestroyEventArgs e)
         {
@@ -47,7 +47,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         {
             HidePanel();
 
-            _omokHost.Reset();
+            //_omokHost.Reset();
 
             _showPickStonePanel.Invoke();
         }

@@ -4,6 +4,7 @@ using LikeLion.LH1.Client.Core.View.GameScene;
 using LikeLion.LH1.Client.UnityWorld.GameScene;
 using System;
 using System.Collections.Generic;
+using static UnityEngine.Rendering.GPUSort;
 
 namespace LikeLion.LH1.Client.UnityWorld
 {
@@ -39,18 +40,7 @@ namespace LikeLion.LH1.Client.UnityWorld
             var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
             var player = new MainPlayer(board, gameSession);
 
-            gameSession.PlayerTurnFinishedEvent += (sender, args) =>
-            {
-                if (args.StoneType == StoneType.Null)
-                    return;
-                board.TryPutStone(args.Column, args.Row, args.StoneType);
-            };
-
-            Action showPickStonePanel = () =>
-            {
-                var pickStonePanel = panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(player, pickStonePanel, gameSession);
-            };
+            GameHost host = null;
 
             Action<bool> showResultPanel = (isWinner) =>
             {
@@ -59,9 +49,30 @@ namespace LikeLion.LH1.Client.UnityWorld
                 //var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
             };
 
-            var flowCtrl = new GameFlowController(gameSession, player, showPickStonePanel, showResultPanel);
+            Action showPickStonePanel = () =>
+            {
+                var pickStonePanel = panelStack.ShowPickStonePanel();
+                var ctrl = new PickStonePanelController(board.GetGameGuid(), player,
+                    pickStonePanel, gameSession, host.Start);
+            };
 
-            flowCtrl.Start();
+            host = new GameHost(gameSession, board, player, showResultPanel, showPickStonePanel);
+            host.Wait();
+
+            EventHandler<ConnectedEventArgs> connectedEvtHdlr = null;
+            connectedEvtHdlr = (sender, args) =>
+            {
+                gameSession.ConnectedEvent -= connectedEvtHdlr;
+
+                player.SetPlayerGuid(args.PlayerGuid);
+                gameSession.RequestGame(player.GetPlayerGuid());
+            };
+            gameSession.ConnectedEvent += connectedEvtHdlr;
+            gameSession.RequestConnect();
+
+            //var flowCtrl = new GameFlowController(gameSession, board, player, showPickStonePanel, showResultPanel);
+
+            //flowCtrl.Start();
 
             //var aiPlayer = new AIPlayer(board, new AIConsole(_logger), _logger);
             //var mainPlayer = new MainPlayer(board);
@@ -130,6 +141,11 @@ namespace LikeLion.LH1.Client.UnityWorld
             //session.RequestConnect();
 
             _screen.HideLoadingBlind();
+        }
+
+        private void GameSession_PlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

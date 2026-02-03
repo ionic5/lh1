@@ -9,7 +9,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
     {
         public event EventHandler<ConnectedEventArgs> ConnectedEvent;
         public event EventHandler<GameCreatedEventArgs> GameCreatedEvent;
-        public event EventHandler GamePreparedEvent;
+        public event EventHandler<GamePreparedEventArgs> GamePreparedEvent;
         public event EventHandler<PlayerTurnStartedEventArgs> PlayerTurnStartedEvent;
         public event EventHandler<PlayerTurnFinishedEventArgs> PlayerTurnFinishedEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
@@ -50,7 +50,12 @@ namespace LikeLion.LH1.Client.Core.GameScene
             var otherPlayer = _players.First(entry => entry.PlayerGuid != playerGuid);
             otherPlayer.StoneType = StoneType.Black == stoneType ? StoneType.White : StoneType.Black;
 
-            GamePreparedEvent?.Invoke(this, EventArgs.Empty);
+            var playerStones = new List<PlayerStone>
+            {
+                new PlayerStone { PlayerGuid = player.PlayerGuid, StoneType = player.StoneType },
+                new PlayerStone { PlayerGuid = otherPlayer.PlayerGuid, StoneType = otherPlayer.StoneType }
+            };
+            GamePreparedEvent?.Invoke(this, new GamePreparedEventArgs { PlayerStones = playerStones });
         }
 
         public void PutStone(string gameGuid, string playerGuid, int column, int row)

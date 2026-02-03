@@ -2,8 +2,6 @@
 {
     public interface IPlayer : IDestroyable
     {
-        string GetGameGuid();
-        void SetGameGuid(string gameGuid);
         void SetPlayerGuid(string playerGuid);
         string GetPlayerGuid();
         int GetStoneType();

@@ -1,140 +1,73 @@
-﻿using LikeLion.LH1.Client.Core.View.GameScene;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 
 namespace LikeLion.LH1.Client.Core.GameScene
 {
-    public class GameHost : IUpdatable
+    public class GameHost
     {
-        public event EventHandler StartGameEvent;
-        public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
+        private readonly IGameSession _gameSession;
+        private readonly IPlayer _mainPlayer;
+        private readonly ICheckerboard _checkerboard;
+        private readonly Action<bool> _showResultPanel;
+        private readonly Action _showPickStonePanel;
 
-        private readonly Checkerboard _checkerboard;
-        private readonly List<IPlayer> _players;
-        private readonly Core.Timer _timer;
-        private readonly float _limitTime;
-        private readonly IMainUIPanel _mainUIPanel;
-
-        public GameHost(Checkerboard checkerboard, List<IPlayer> players, Timer timer, float limitTime, IMainUIPanel mainUIPanel)
+        public GameHost(IGameSession gameSession, ICheckerboard checkerboard,
+            IPlayer mainPlayer, Action<bool> showResultPanel, Action showPickStonePanel)
         {
+            _gameSession = gameSession;
+            _mainPlayer = mainPlayer;
             _checkerboard = checkerboard;
-            _players = players;
-            _timer = timer;
-            _limitTime = limitTime;
-            _checkerboard.StonePuttedEvent += OnStonePuttedEvent;
-            _mainUIPanel = mainUIPanel;
+            _showResultPanel = showResultPanel;
+            _showPickStonePanel = showPickStonePanel;
         }
 
-        public void Reset()
+        public void Wait()
         {
-            _checkerboard.Clear();
+            _gameSession.GameCreatedEvent += OnGameCreatedEvent;
+        }
+
+        private void OnGameCreatedEvent(object sender, GameCreatedEventArgs args)
+        {
+            _gameSession.GameCreatedEvent -= OnGameCreatedEvent;
+
+            _checkerboard.SetGameGuid(args.GameGuid);
+            _showPickStonePanel?.Invoke();
         }
 
         public void Start()
         {
-            StartGameEvent?.Invoke(this, EventArgs.Empty);
+            _gameSession.PlayerTurnStartedEvent += OnPlayerTurnStartedEvent;
+            _gameSession.PlayerTurnFinishedEvent += OnPlayerTurnFinishedEvent;
+            _gameSession.GameFinishedEvent += OnGameFinishedEvent;
 
-            var player = _players.First(entry => entry.IsStoneOwner(StoneType.Black));
-            StartTurn(player);
+            _gameSession.StartGame(_checkerboard.GetGameGuid(), _mainPlayer.GetPlayerGuid());
         }
 
-        private void OnStonePuttedEvent(object sender, StonePuttedEventArgs args)
+        private void OnPlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs args)
         {
-            var player = _players.First(entry => entry.IsStoneOwner(args.StoneType));
-            player.HaltTurn();
-
-            var winnerStone = CheckWinner(_checkerboard.ToArray());
-            if (winnerStone == StoneType.Null)
-            {
-                var otherPlayer = _players.First(entry => !entry.IsStoneOwner(args.StoneType));
-                StartTurn(otherPlayer);
+            if (_mainPlayer.GetPlayerGuid() != args.PlayerGuid)
                 return;
-            }
 
-            _timer.Stop(0);
-            GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs { WinnerStone = winnerStone });
+            _mainPlayer.StartTurn();
         }
 
-        private void StartTurn(IPlayer player)
+        private void OnPlayerTurnFinishedEvent(object sender, PlayerTurnFinishedEventArgs args)
         {
-            _mainUIPanel.PlayTurnStartAnimation(player.GetStoneType());
-            _mainUIPanel.SetCurrentPlayerStone(player.GetStoneType());
+            if (args.StoneType != StoneType.Null)
+                _checkerboard.PutStone(args.Column, args.Row, args.StoneType);
 
-            player.StartTurn();
-
-            _timer.Stop(0);
-            _timer.Start(0, _limitTime, () =>
-            {
-                player.HaltTurn();
-
-                var otherPlayer = _players.First(entry => entry != player);
-                StartTurn(otherPlayer);
-            });
+            if (_mainPlayer.GetPlayerGuid() != args.PlayerGuid)
+                return;
+            _mainPlayer.HaltTurn();
         }
 
-        private int CheckWinner(int[][] board)
+        private void OnGameFinishedEvent(object sender, GameFinishedEventArgs args)
         {
-            int rows = board.Length;
-            if (rows == 0) return StoneType.Null;
-            int cols = board[0].Length;
+            bool isWinner = _mainPlayer.GetPlayerGuid() == args.WinnerGuid;
+            _showResultPanel?.Invoke(isWinner);
 
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < cols; c++)
-                {
-                    if (board[r][c] == 0) continue;
-
-                    int stone = board[r][c];
-
-                    if (CheckDirection(board, r, c, 0, 1, stone) || // Horizontal
-                        CheckDirection(board, r, c, 1, 0, stone) || // Vertical
-                        CheckDirection(board, r, c, 1, 1, stone) || // Right down
-                        CheckDirection(board, r, c, 1, -1, stone))  // Left down
-                    {
-                        return stone;
-                    }
-                }
-            }
-
-            return StoneType.Null;
-        }
-
-        private bool CheckDirection(int[][] board, int r, int c, int dr, int dc, int stone)
-        {
-            int count = 1;
-            int rows = board.Length;
-            int cols = board[0].Length;
-
-            for (int i = 1; i < 5; i++)
-            {
-                int nr = r + (dr * i);
-                int nc = c + (dc * i);
-
-                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && board[nr][nc] == stone)
-                {
-                    count++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return count == 5;
-        }
-
-        public void Update()
-        {
-            if (_timer.IsRunning(0))
-                _mainUIPanel.SetRemainTime(_timer.GetRemainTime(0));
-        }
-
-        public void Destroy()
-        {
-            StartGameEvent = null;
-            GameFinishedEvent = null;
-            _checkerboard.StonePuttedEvent -= OnStonePuttedEvent;
+            _gameSession.PlayerTurnStartedEvent -= OnPlayerTurnStartedEvent;
+            _gameSession.PlayerTurnFinishedEvent -= OnPlayerTurnFinishedEvent;
+            _gameSession.GameFinishedEvent -= OnGameFinishedEvent;
         }
     }
 }

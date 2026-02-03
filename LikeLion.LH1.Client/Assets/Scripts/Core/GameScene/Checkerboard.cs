@@ -5,17 +5,18 @@ using System.Linq;
 
 namespace LikeLion.LH1.Client.Core.GameScene
 {
-    public class Checkerboard
+    public class Checkerboard : ICheckerboard
     {
         private readonly List<List<int>> _board;
-        private readonly ICheckerboard _checkerboardView;
+        private readonly View.GameScene.ICheckerboard _checkerboardView;
         private readonly Core.ILogger _logger;
         private bool _isDestroyed;
+        private string _gameGuid;
 
         public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
         public event EventHandler<StonePuttedEventArgs> StonePuttedEvent;
 
-        public Checkerboard(ICheckerboard checkerboardView, ILogger logger)
+        public Checkerboard(View.GameScene.ICheckerboard checkerboardView, ILogger logger)
         {
             _checkerboardView = checkerboardView;
             _checkerboardView.StonePointClickedEvent += OnStonePointClickedEvent;
@@ -65,19 +66,19 @@ namespace LikeLion.LH1.Client.Core.GameScene
             return _board.Select(row => row.ToArray()).ToArray();
         }
 
-        public bool TryPutStone(int column, int row, int stoneType)
+        public void PutStone(int column, int row, int stoneType)
         {
             if (_board[column][row] != StoneType.Null)
             {
                 _logger.Warn("Attempted to place a stone on a non-empty point. Ignored.");
-                return false;
+                return;
             }
 
             _board[column][row] = stoneType;
             _checkerboardView.PutStone(column, row, stoneType);
 
             StonePuttedEvent?.Invoke(this, new StonePuttedEventArgs { StoneType = stoneType });
-            return true;
+            return;
         }
 
         public void Clear()
@@ -92,6 +93,16 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public bool IsStonePointEmpty(int column, int row)
         {
             return _board[column][row] == StoneType.Null;
+        }
+
+        public string GetGameGuid()
+        {
+            return _gameGuid;
+        }
+
+        public void SetGameGuid(string gameGuid)
+        {
+            _gameGuid = gameGuid;
         }
     }
 }

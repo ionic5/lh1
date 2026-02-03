@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
 {
-    public class Checkerboard : MonoBehaviour, ICheckerboard
+    public class Checkerboard : MonoBehaviour, Core.View.GameScene.ICheckerboard
     {
         [SerializeField]
         private GameObject _blockPrefab;
