@@ -50,12 +50,11 @@ namespace LikeLion.LH1.Client.Core.GameScene
             var otherPlayer = _players.First(entry => entry.PlayerGuid != playerGuid);
             otherPlayer.StoneType = StoneType.Black == stoneType ? StoneType.White : StoneType.Black;
 
-            var playerStones = new List<PlayerStone>
+            var stoneOwners = new List<StoneOwner>
             {
                 new PlayerStone { PlayerGuid = player.PlayerGuid, StoneType = player.StoneType },
-                new PlayerStone { PlayerGuid = otherPlayer.PlayerGuid, StoneType = otherPlayer.StoneType }
             };
-            GamePreparedEvent?.Invoke(this, new GamePreparedEventArgs { PlayerStones = playerStones });
+            GamePreparedEvent?.Invoke(this, new GamePreparedEventArgs { StoneOwners = stoneOwners });
         }
 
         public void PutStone(string gameGuid, string playerGuid, int column, int row)

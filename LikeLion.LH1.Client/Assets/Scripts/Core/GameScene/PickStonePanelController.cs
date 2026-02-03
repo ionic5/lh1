@@ -8,15 +8,15 @@ namespace LikeLion.LH1.Client.Core.GameScene
     {
         private readonly IPickStonePanel _pickStonePanel;
         private readonly IGameSession _gameSession;
-        private readonly string _gameGuid;
         private readonly IPlayer _player;
         private readonly Action _startGame;
         private readonly Core.ILogger _logger;
+        private readonly ICheckerboard _checkerboard;
 
-        public PickStonePanelController(string gameGuid, IPlayer player,
+        public PickStonePanelController(ICheckerboard checkerboard, IPlayer player,
             IPickStonePanel pickStonePanel, IGameSession gameSession, Action startGame, ILogger logger)
         {
-            _gameGuid = gameGuid;
+            _checkerboard = checkerboard;
             _gameSession = gameSession;
             _player = player;
             _pickStonePanel = pickStonePanel;
@@ -35,8 +35,17 @@ namespace LikeLion.LH1.Client.Core.GameScene
             DetachEventHandlers();
             _pickStonePanel.Hide();
 
-            var stoneType = args.PlayerStones.Where(entry => entry.PlayerGuid == _player.GetPlayerGuid()).Select(entry => entry.StoneType).First();
+            var stoneType = args.StoneOwners.Where(entry => entry.PlayerGuid == _player.GetPlayerGuid()).Select(entry => entry.StoneType).First();
             _player.SetStone(stoneType);
+
+            foreach (var entry in args.StoneOwners)
+            {
+                _checkerboard.RegisterStoneOwner(entry.PlayerGuid, entry.StoneType);
+
+                if (_player.GetPlayerGuid() == entry.PlayerGuid)
+                    _player.SetStone(stoneType);
+            }
+
             _startGame.Invoke();
         }
 
@@ -71,7 +80,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         private void PickStone(int stoneType)
         {
-            _gameSession.PickStone(_gameGuid, _player.GetPlayerGuid(), stoneType);
+            _gameSession.PickStone(_checkerboard.GetGameGuid(), _player.GetPlayerGuid(), stoneType);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace LikeLion.LH1.Client.UnityWorld
                 _logger.Info("Show pick stone panel called.");
 
                 var pickStonePanel = panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(board.GetGameGuid(), player,
+                var ctrl = new PickStonePanelController(board, player,
                     pickStonePanel, gameSession, host.Start, _logger);
             };
 
@@ -59,9 +59,7 @@ namespace LikeLion.LH1.Client.UnityWorld
                 var ctrl = new ResultPanelController(host, panel, _loadTitleScene);
             };
 
-            host = new GameHost(gameSession, board, player,
-                showResultPanel,
-                showPickStonePanel);
+            host = new GameHost(gameSession, board, player, mainUIPanel, showResultPanel, showPickStonePanel);
             host.Connect();
 
             //var flowCtrl = new GameFlowController(gameSession, board, player, showPickStonePanel, showResultPanel);

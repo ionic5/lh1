@@ -12,12 +12,15 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly Core.ILogger _logger;
         private bool _isDestroyed;
         private string _gameGuid;
+        private List<Tuple<string, int>> _stoneOwners;
 
         public event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
         public event EventHandler<StonePuttedEventArgs> StonePuttedEvent;
 
         public Checkerboard(View.GameScene.ICheckerboard checkerboardView, ILogger logger)
         {
+            _stoneOwners = new List<Tuple<string, int>>();
+
             _checkerboardView = checkerboardView;
             _checkerboardView.StonePointClickedEvent += OnStonePointClickedEvent;
             _checkerboardView.DestroyEvent += OnDestroyViewEvent;
@@ -88,6 +91,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
                     _board[i][j] = StoneType.Null;
 
             _checkerboardView.Clear();
+
+            _stoneOwners.Clear();
         }
 
         public bool IsStonePointEmpty(int column, int row)
@@ -103,6 +108,16 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public void SetGameGuid(string gameGuid)
         {
             _gameGuid = gameGuid;
+        }
+
+        public void RegisterStoneOwner(string playerGuid, int stoneType)
+        {
+            _stoneOwners.Add(new Tuple<string, int>(playerGuid, stoneType));
+        }
+
+        public int GetStone(string playerGuid)
+        {
+            return _stoneOwners.Where(entry => entry.Item1 == playerGuid).Select(entry => entry.Item2).First();
         }
     }
 }
