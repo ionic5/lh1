@@ -11,20 +11,22 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly string _gameGuid;
         private readonly IPlayer _player;
         private readonly Action _startGame;
+        private readonly Core.ILogger _logger;
 
         public PickStonePanelController(string gameGuid, IPlayer player,
-            IPickStonePanel pickStonePanel, IGameSession gameSession, Action startGame)
+            IPickStonePanel pickStonePanel, IGameSession gameSession, Action startGame, ILogger logger)
         {
             _gameGuid = gameGuid;
             _gameSession = gameSession;
             _player = player;
             _pickStonePanel = pickStonePanel;
             _startGame = startGame;
+            _logger = logger;
 
+            _logger.Info("Event handler attached.");
             _pickStonePanel.BlackStoneButtonClickedEvent += OnBlackStoneButtonClickedEvent;
             _pickStonePanel.WhiteStoneButtonClickedEvent += OnWhiteStoneButtonClickedEvent;
             _pickStonePanel.DestroyEvent += OnDestroyPanelEvent;
-
             _gameSession.GamePreparedEvent += OnGamePreparedEvent;
         }
 
@@ -45,20 +47,25 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         private void DetachEventHandlers()
         {
+            _logger.Info("Event handler detached.");
+
             _pickStonePanel.BlackStoneButtonClickedEvent -= OnBlackStoneButtonClickedEvent;
             _pickStonePanel.WhiteStoneButtonClickedEvent -= OnWhiteStoneButtonClickedEvent;
             _pickStonePanel.DestroyEvent -= OnDestroyPanelEvent;
-
             _gameSession.GamePreparedEvent -= OnGamePreparedEvent;
         }
 
         public void OnWhiteStoneButtonClickedEvent(object sender, EventArgs args)
         {
+            _logger.Info("White stone button clicked.");
+
             PickStone(StoneType.White);
         }
 
         public void OnBlackStoneButtonClickedEvent(object sender, EventArgs args)
         {
+            _logger.Info("Black stone button clicked.");
+
             PickStone(StoneType.Black);
         }
 

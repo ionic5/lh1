@@ -10,9 +10,10 @@ namespace LikeLion.LH1.Client.Core.GameScene
     {
         event EventHandler<StonePointClickedEventArgs> StonePointClickedEvent;
 
+        void SetGameGuid(string gameGuid);
         string GetGameGuid();
         bool IsStonePointEmpty(int column, int row);
         void PutStone(int column, int row, int stoneType);
-        void SetGameGuid(string gameGuid);
+        void Clear();
     }
 }

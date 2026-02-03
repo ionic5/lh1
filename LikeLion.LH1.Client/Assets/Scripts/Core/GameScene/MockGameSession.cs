@@ -84,6 +84,10 @@ namespace LikeLion.LH1.Client.Core.GameScene
             {
                 PlayerTurnStartedEvent -= OnPlayerTurnStartedEvent;
 
+                for (int i = 0; i < 19; i++)
+                    for (int j = 0; j < 19; j++)
+                        _board[i][j] = StoneType.Null;
+
                 var winner = _players.Where(entry => entry.StoneType == winnerStone).First();
                 GameFinishedEvent?.Invoke(this, new GameFinishedEventArgs
                 {

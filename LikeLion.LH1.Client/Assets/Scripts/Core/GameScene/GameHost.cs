@@ -20,6 +20,29 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _showPickStonePanel = showPickStonePanel;
         }
 
+        public void Connect()
+        {
+            _gameSession.ConnectedEvent += OnConnectedEvent;
+
+            _gameSession.RequestConnect();
+        }
+
+        private void OnConnectedEvent(object sender, ConnectedEventArgs args)
+        {
+            _gameSession.ConnectedEvent -= OnConnectedEvent;
+
+            _mainPlayer.SetPlayerGuid(args.PlayerGuid);
+
+            RequestGame();
+        }
+
+        private void RequestGame()
+        {
+            Wait();
+
+            _gameSession.RequestGame(_mainPlayer.GetPlayerGuid());
+        }
+
         public void Wait()
         {
             _gameSession.GameCreatedEvent += OnGameCreatedEvent;
@@ -68,6 +91,13 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _gameSession.PlayerTurnStartedEvent -= OnPlayerTurnStartedEvent;
             _gameSession.PlayerTurnFinishedEvent -= OnPlayerTurnFinishedEvent;
             _gameSession.GameFinishedEvent -= OnGameFinishedEvent;
+        }
+
+        public void Restart()
+        {
+            _checkerboard.Clear();
+
+            RequestGame();
         }
     }
 }

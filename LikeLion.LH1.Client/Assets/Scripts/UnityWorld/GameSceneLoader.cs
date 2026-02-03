@@ -41,34 +41,28 @@ namespace LikeLion.LH1.Client.UnityWorld
             var player = new MainPlayer(board, gameSession);
 
             GameHost host = null;
+            Action showPickStonePanel = () =>
+            {
+                _logger.Info("Show pick stone panel called.");
+
+                var pickStonePanel = panelStack.ShowPickStonePanel();
+                var ctrl = new PickStonePanelController(board.GetGameGuid(), player,
+                    pickStonePanel, gameSession, host.Start, _logger);
+            };
 
             Action<bool> showResultPanel = (isWinner) =>
             {
+                _logger.Info("Show result panel called.");
+
                 var panel = panelStack.ShowResultPanel();
                 panel.SetResult(isWinner);
-                //var ctrl = new ResultPanelController(host, panel, showPickStonePanel, _loadTitleScene);
+                var ctrl = new ResultPanelController(host, panel, _loadTitleScene);
             };
 
-            Action showPickStonePanel = () =>
-            {
-                var pickStonePanel = panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(board.GetGameGuid(), player,
-                    pickStonePanel, gameSession, host.Start);
-            };
-
-            host = new GameHost(gameSession, board, player, showResultPanel, showPickStonePanel);
-            host.Wait();
-
-            EventHandler<ConnectedEventArgs> connectedEvtHdlr = null;
-            connectedEvtHdlr = (sender, args) =>
-            {
-                gameSession.ConnectedEvent -= connectedEvtHdlr;
-
-                player.SetPlayerGuid(args.PlayerGuid);
-                gameSession.RequestGame(player.GetPlayerGuid());
-            };
-            gameSession.ConnectedEvent += connectedEvtHdlr;
-            gameSession.RequestConnect();
+            host = new GameHost(gameSession, board, player,
+                showResultPanel,
+                showPickStonePanel);
+            host.Connect();
 
             //var flowCtrl = new GameFlowController(gameSession, board, player, showPickStonePanel, showResultPanel);
 
@@ -141,11 +135,6 @@ namespace LikeLion.LH1.Client.UnityWorld
             //session.RequestConnect();
 
             _screen.HideLoadingBlind();
-        }
-
-        private void GameSession_PlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }
