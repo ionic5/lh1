@@ -52,7 +52,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
             var stoneOwners = new List<StoneOwner>
             {
-                new PlayerStone { PlayerGuid = player.PlayerGuid, StoneType = player.StoneType },
+                new StoneOwner { PlayerGuid = player.PlayerGuid, StoneType = player.StoneType },
+                new StoneOwner { PlayerGuid = otherPlayer.PlayerGuid, StoneType = otherPlayer.StoneType }
             };
             GamePreparedEvent?.Invoke(this, new GamePreparedEventArgs { StoneOwners = stoneOwners });
         }
