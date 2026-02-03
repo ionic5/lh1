@@ -19,6 +19,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private Core.Timer _timer;
         private string _gameGuid;
         private List<List<int>> _board;
+        private float _timeLimit;
 
         private class Player
         {
@@ -28,6 +29,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         public MockGameSession(IAIConsole aiConsole, Timer timer)
         {
+            _timeLimit = 8;
             _players = new List<Player>();
             _aiConsole = aiConsole;
             _timer = timer;
@@ -123,9 +125,13 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         private void StartTurn(string playerGuid)
         {
-            PlayerTurnStartedEvent?.Invoke(this, new PlayerTurnStartedEventArgs { PlayerGuid = playerGuid });
+            PlayerTurnStartedEvent?.Invoke(this, new PlayerTurnStartedEventArgs
+            {
+                PlayerGuid = playerGuid,
+                TimeLimit = _timeLimit
+            });
 
-            _timer.Start(0, 60, () =>
+            _timer.Start(0, _timeLimit, () =>
             {
                 PlayerTurnFinishedEvent?.Invoke(this, new PlayerTurnFinishedEventArgs
                 {
@@ -147,7 +153,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
                 return;
 
             var cts = new CancellationTokenSource();
-            _timer.Start(1, 60, () =>
+            _timer.Start(1, _timeLimit, () =>
             {
                 cts?.Cancel();
                 cts?.Dispose();

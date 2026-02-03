@@ -59,8 +59,11 @@ namespace LikeLion.LH1.Client.UnityWorld
                 var ctrl = new ResultPanelController(host, panel, _loadTitleScene);
             };
 
-            host = new GameHost(gameSession, board, player, mainUIPanel, showResultPanel, showPickStonePanel);
+            host = new GameHost(gameSession, board, player, mainUIPanel, new Core.Timer(_time, loop),
+                showResultPanel, showPickStonePanel);
             host.Connect();
+
+            loop.Add(host);
 
             //var flowCtrl = new GameFlowController(gameSession, board, player, showPickStonePanel, showResultPanel);
 
