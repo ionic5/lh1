@@ -1,62 +1,87 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LikeLion.LH1.Client.Core.GameScene.Entity
 {
     public class Checkerboard
     {
-        public int GetStone(string playerGuid)
+        private List<List<int>> _board;
+        private readonly List<Tuple<string, int>> _stoneOwners;
+        private string _gameGuid;
+
+        public Checkerboard()
         {
-            throw new NotImplementedException();
+            _stoneOwners = new List<Tuple<string, int>>();
         }
 
         public int[][] ToArray()
         {
-            throw new NotImplementedException();
+            return _board.Select(row => row.ToArray()).ToArray();
         }
 
         public string GetGameGuid()
         {
-            throw new NotImplementedException();
+            return _gameGuid;
         }
 
         public bool IsStonePointEmpty(int column, int row)
         {
-            throw new NotImplementedException();
+            return _board[column][row] == StoneType.Null;
         }
 
         public void RegisterStoneOwner(string playerGuid, int stoneType)
         {
-            throw new NotImplementedException();
+            _stoneOwners.Add(new Tuple<string, int>(playerGuid, stoneType));
+        }
+
+        public int GetStone(string playerGuid)
+        {
+            return _stoneOwners.Where(entry => entry.Item1 == playerGuid).Select(entry => entry.Item2).First();
         }
 
         public void SetGameGuid(string gameGuid)
         {
-            throw new NotImplementedException();
+            _gameGuid = gameGuid;
         }
 
         public string GetPlayerGuid(int stoneType)
         {
-            throw new NotImplementedException();
+            var playerGuid = _stoneOwners.Where(entry => entry.Item2 == stoneType)
+                .Select(entry => entry.Item1).First();
+            return playerGuid;
         }
 
         public string GetOpponentPlayerGuid(string playerGuid)
         {
-            throw new NotImplementedException();
+            return _stoneOwners.Where(entry => entry.Item1 != playerGuid).Select(entry => entry.Item1).First();
         }
 
-        internal void PutStone(int column, int row, int stoneType)
+        public void PutStone(int column, int row, int stoneType)
         {
-            throw new NotImplementedException();
+            _board[column][row] = stoneType;
         }
 
-        internal void Clear()
+        public void Clear()
         {
-            throw new NotImplementedException();
+            _gameGuid = string.Empty;
+            _stoneOwners.Clear();
+
+            for (int i = 0; i < 19; i++)
+                for (int j = 0; j < 19; j++)
+                    _board[i][j] = StoneType.Null;
         }
 
-        internal void Setup()
+        public void Setup()
         {
-            throw new NotImplementedException();
+            _board = new List<List<int>>();
+            for (int i = 0; i < 19; i++)
+            {
+                List<int> row = new List<int>();
+                for (int j = 0; j < 19; j++)
+                    row.Add(StoneType.Null);
+                _board.Add(row);
+            }
         }
 
         public int CheckWinner()
