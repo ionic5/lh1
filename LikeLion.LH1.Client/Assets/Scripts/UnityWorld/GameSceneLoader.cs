@@ -36,8 +36,8 @@ namespace LikeLion.LH1.Client.UnityWorld
             var mainUIPanel = scene.MainUIPanel;
             var panelStack = scene.PanelStack;
 
-            var gameSession = new MockGameSession(new AIConsole(_logger), new Core.Timer(_time, loop));
-            var board = new Core.GameScene.Checkerboard(checkerBoard, _logger);
+            var gameSession = new MockGameSession(new Core.Timer(_time, loop), new Core.GameScene.Entity.Checkerboard());
+            var board = new Core.GameScene.Checkerboard(checkerBoard, new Core.GameScene.Entity.Checkerboard(), _logger);
             var player = new MainPlayer(board, gameSession);
 
             GameHost host = null;

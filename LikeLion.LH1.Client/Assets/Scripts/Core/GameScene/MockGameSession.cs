@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace LikeLion.LH1.Client.Core.GameScene
 {
@@ -14,15 +12,16 @@ namespace LikeLion.LH1.Client.Core.GameScene
         public event EventHandler<PlayerTurnFinishedEventArgs> PlayerTurnFinishedEvent;
         public event EventHandler<GameFinishedEventArgs> GameFinishedEvent;
 
-        private Core.Timer _timer;
-        private float _timeLimit;
-        private Entity.Checkerboard _checkerboard;
+        private readonly Core.Timer _timer;
+        private readonly float _timeLimit;
+        private readonly Entity.Checkerboard _checkerboard;
         private IPlayer _dummyPlayer;
 
-        public MockGameSession(IAIConsole aiConsole, Timer timer)
+        public MockGameSession(Timer timer, Entity.Checkerboard checkerboard)
         {
             _timeLimit = 8;
             _timer = timer;
+            _checkerboard = checkerboard;
         }
 
         public void RequestConnect()
