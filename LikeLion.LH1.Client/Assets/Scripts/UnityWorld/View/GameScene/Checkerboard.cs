@@ -1,6 +1,5 @@
 using LikeLion.LH1.Client.Core;
 using LikeLion.LH1.Client.Core.GameScene;
-using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

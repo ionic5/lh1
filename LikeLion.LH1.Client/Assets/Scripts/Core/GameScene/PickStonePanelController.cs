@@ -1,6 +1,5 @@
 ﻿using LikeLion.LH1.Client.Core.View.GameScene;
 using System;
-using System.Linq;
 
 namespace LikeLion.LH1.Client.Core.GameScene
 {

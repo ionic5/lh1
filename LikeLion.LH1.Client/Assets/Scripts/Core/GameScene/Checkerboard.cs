@@ -1,7 +1,4 @@
-﻿using LikeLion.LH1.Client.Core.View.GameScene;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 
 namespace LikeLion.LH1.Client.Core.GameScene
 {
