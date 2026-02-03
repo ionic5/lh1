@@ -9,7 +9,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private bool _isDestroyed;
         private bool _isMyTurn;
         private string _playerGuid;
-        private int _stoneType;
 
         public event EventHandler<DestroyEventArgs> DestroyEvent;
 
@@ -19,25 +18,9 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _isDestroyed = false;
             _isMyTurn = false;
             _playerGuid = string.Empty;
-            _stoneType = StoneType.Null;
 
             _board.StonePointClickedEvent += OnStonePointClickedEvent;
             _gameSession = gameSession;
-        }
-
-        public bool IsStoneOwner(int stoneType)
-        {
-            return _stoneType == stoneType;
-        }
-
-        public int GetStoneType()
-        {
-            return _stoneType;
-        }
-
-        public void SetStone(int stoneType)
-        {
-            _stoneType = stoneType;
         }
 
         public void StartTurn()

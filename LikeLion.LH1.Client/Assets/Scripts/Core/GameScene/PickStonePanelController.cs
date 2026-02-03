@@ -35,16 +35,8 @@ namespace LikeLion.LH1.Client.Core.GameScene
             DetachEventHandlers();
             _pickStonePanel.Hide();
 
-            var stoneType = args.StoneOwners.Where(entry => entry.PlayerGuid == _player.GetPlayerGuid()).Select(entry => entry.StoneType).First();
-            _player.SetStone(stoneType);
-
             foreach (var entry in args.StoneOwners)
-            {
                 _checkerboard.RegisterStoneOwner(entry.PlayerGuid, entry.StoneType);
-
-                if (_player.GetPlayerGuid() == entry.PlayerGuid)
-                    _player.SetStone(stoneType);
-            }
 
             _startGame.Invoke();
         }
