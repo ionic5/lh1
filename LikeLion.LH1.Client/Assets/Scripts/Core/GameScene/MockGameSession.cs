@@ -150,5 +150,10 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
             _dummyPlayer.HaltTurn();
         }
+
+        public void Destroy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

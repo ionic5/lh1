@@ -13,5 +13,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
         void RegisterStoneOwner(string playerGuid, int stoneType);
         int GetStone(string playerGuid);
         void Clear();
+        void Destroy();
     }
 }

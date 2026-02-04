@@ -10,8 +10,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly ICheckerboard _checkerboard;
         private readonly IMainUIPanel _mainUIPanel;
         private readonly Core.Timer _timer;
-        private readonly Action<bool> _showResultPanel;
-        private readonly Action _showPickStonePanel;
+        private readonly PanelHandler _panelHandler;
 
         private IGameState _currentState;
 
@@ -69,7 +68,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
             private void OnGameCreated(object s, GameCreatedEventArgs e)
             {
                 _host._checkerboard.SetGameGuid(e.GameGuid);
-                _host._showPickStonePanel?.Invoke();
+                _host._panelHandler.ShowPickStonePanel();
             }
 
             public void Exit()
@@ -129,7 +128,7 @@ namespace LikeLion.LH1.Client.Core.GameScene
                 _host._timer.Stop(0);
                 _host._mainUIPanel.Hide();
                 bool isWinner = _host._mainPlayer.GetPlayerGuid() == args.WinnerGuid;
-                _host._showResultPanel?.Invoke(isWinner);
+                _host._panelHandler.ShowResultPanel(isWinner);
             }
 
             public void Exit()
@@ -148,13 +147,12 @@ namespace LikeLion.LH1.Client.Core.GameScene
 
         public GameHost(IGameSession gameSession, ICheckerboard checkerboard, IPlayer mainPlayer,
             IMainUIPanel mainUIPanel, Timer timer,
-            Action<bool> showResultPanel, Action showPickStonePanel)
+            PanelHandler panelHandler)
         {
             _gameSession = gameSession;
             _mainPlayer = mainPlayer;
             _checkerboard = checkerboard;
-            _showResultPanel = showResultPanel;
-            _showPickStonePanel = showPickStonePanel;
+            _panelHandler = panelHandler;
             _mainUIPanel = mainUIPanel;
             _timer = timer;
         }
@@ -191,8 +189,12 @@ namespace LikeLion.LH1.Client.Core.GameScene
         {
             _currentState?.Exit();
             _currentState = null;
-            _timer?.Stop(0);
-            _mainPlayer?.HaltTurn();
+
+            _timer.Destroy();
+            _mainPlayer.Destroy();
+            _gameSession.Destroy();
+            _checkerboard.Destroy();
+            _panelHandler.Destroy();
         }
     }
 }

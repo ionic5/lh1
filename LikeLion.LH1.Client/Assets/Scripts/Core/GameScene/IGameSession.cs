@@ -16,5 +16,6 @@ namespace LikeLion.LH1.Client.Core.GameScene
         void PickStone(string gameGuid, string playerGuid, int stoneType);
         void PutStone(string gameGuid, string playerGuid, int column, int row);
         void StartGame(string gameGuid, string playerGuid);
+        void Destroy();
     }
 }

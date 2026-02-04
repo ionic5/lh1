@@ -47,32 +47,18 @@ namespace LikeLion.LH1.Client.UnityWorld
             var board = new Core.GameScene.Checkerboard(checkerBoard, boardEntity, _logger);
             var player = new MainPlayer(board, gameSession);
 
-            GameHost host = null;
-            Action showPickStonePanel = () =>
-            {
-                _logger.Info("Show pick stone panel called.");
+            var panelHdlr = new PanelHandler(panelStack, board, player, gameSession, _logger, _loadTitleScene);
+            var host = new GameHost(gameSession, board, player, mainUIPanel, new Core.Timer(_time, loop), panelHdlr);
 
-                var pickStonePanel = panelStack.ShowPickStonePanel();
-                var ctrl = new PickStonePanelController(board, player,
-                    pickStonePanel, gameSession, host.Start, _logger);
-            };
-            Action<bool> showResultPanel = (isWinner) =>
-            {
-                _logger.Info("Show result panel called.");
+            panelHdlr.SetHost(host);
 
-                var panel = panelStack.ShowResultPanel();
-                panel.SetResult(isWinner);
-                var ctrl = new ResultPanelController(host, panel, _loadTitleScene);
-            };
-
-            host = new GameHost(gameSession, board, player, mainUIPanel, new Core.Timer(_time, loop),
-                showResultPanel, showPickStonePanel);
             host.Connect();
             loop.Add(host);
 
             scene.DestroyEvent += (sender, args) =>
             {
                 host.Destroy();
+                loop.Remove(host);
             };
 
             _screen.HideLoadingBlind();

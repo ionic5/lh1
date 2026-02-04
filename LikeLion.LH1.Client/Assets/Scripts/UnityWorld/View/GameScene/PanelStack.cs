@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LikeLion.LH1.Client.UnityWorld.View.GameScene
 {
-    public class PanelStack : MonoBehaviour
+    public class PanelStack : MonoBehaviour, IPanelStack
     {
         [SerializeField]
         private ResultPanel _resultPanel;
