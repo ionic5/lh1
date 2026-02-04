@@ -68,8 +68,12 @@ namespace LikeLion.LH1.Client.UnityWorld
             host = new GameHost(gameSession, board, player, mainUIPanel, new Core.Timer(_time, loop),
                 showResultPanel, showPickStonePanel);
             host.Connect();
-
             loop.Add(host);
+
+            scene.DestroyEvent += (sender, args) =>
+            {
+                host.Destroy();
+            };
 
             _screen.HideLoadingBlind();
         }

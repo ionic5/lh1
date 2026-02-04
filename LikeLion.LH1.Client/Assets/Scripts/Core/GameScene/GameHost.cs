@@ -8,10 +8,143 @@ namespace LikeLion.LH1.Client.Core.GameScene
         private readonly IGameSession _gameSession;
         private readonly IPlayer _mainPlayer;
         private readonly ICheckerboard _checkerboard;
-        private readonly Action<bool> _showResultPanel;
-        private readonly Action _showPickStonePanel;
         private readonly IMainUIPanel _mainUIPanel;
         private readonly Core.Timer _timer;
+        private readonly Action<bool> _showResultPanel;
+        private readonly Action _showPickStonePanel;
+
+        private IGameState _currentState;
+
+        private interface IGameState
+        {
+            void Enter();
+            void Exit();
+            void Update();
+        }
+
+        private class ConnectingState : IGameState
+        {
+            private readonly GameHost _host;
+
+            public ConnectingState(GameHost host)
+            {
+                _host = host;
+            }
+
+            public void Enter()
+            {
+                _host._gameSession.ConnectedEvent += OnConnected;
+                _host._gameSession.RequestConnect();
+            }
+
+            private void OnConnected(object sender, ConnectedEventArgs args)
+            {
+                _host._mainPlayer.SetPlayerGuid(args.PlayerGuid);
+                _host.ChangeState(new WaitingState(_host));
+            }
+
+            public void Exit()
+            {
+                _host._gameSession.ConnectedEvent -= OnConnected;
+            }
+
+            public void Update() { }
+        }
+
+        private class WaitingState : IGameState
+        {
+            private readonly GameHost _host;
+
+            public WaitingState(GameHost host)
+            {
+                _host = host;
+            }
+
+            public void Enter()
+            {
+                _host._gameSession.GameCreatedEvent += OnGameCreated;
+                _host._gameSession.RequestGame(_host._mainPlayer.GetPlayerGuid());
+            }
+
+            private void OnGameCreated(object s, GameCreatedEventArgs e)
+            {
+                _host._checkerboard.SetGameGuid(e.GameGuid);
+                _host._showPickStonePanel?.Invoke();
+            }
+
+            public void Exit()
+            {
+                _host._gameSession.GameCreatedEvent -= OnGameCreated;
+            }
+
+            public void Update() { }
+        }
+
+        private class PlayingState : IGameState
+        {
+            private readonly GameHost _host;
+
+            public PlayingState(GameHost host)
+            {
+                _host = host;
+            }
+
+            public void Enter()
+            {
+                _host._gameSession.PlayerTurnStartedEvent += OnTurnStarted;
+                _host._gameSession.PlayerTurnFinishedEvent += OnTurnFinished;
+                _host._gameSession.GameFinishedEvent += OnGameFinished;
+
+                _host._gameSession.StartGame(_host._checkerboard.GetGameGuid(), _host._mainPlayer.GetPlayerGuid());
+
+                _host._mainUIPanel.Show();
+                _host._mainUIPanel.SetMainPlayerStone(_host._checkerboard.GetStone(_host._mainPlayer.GetPlayerGuid()));
+            }
+
+            private void OnTurnStarted(object sender, PlayerTurnStartedEventArgs args)
+            {
+                var stone = _host._checkerboard.GetStone(args.PlayerGuid);
+
+                _host._mainUIPanel.PlayTurnStartAnimation(stone);
+                _host._mainUIPanel.SetCurrentPlayerStone(stone);
+                _host._timer.Start(0, args.TimeLimit);
+
+                if (_host._mainPlayer.GetPlayerGuid() == args.PlayerGuid)
+                    _host._mainPlayer.StartTurn();
+            }
+
+            private void OnTurnFinished(object sender, PlayerTurnFinishedEventArgs args)
+            {
+                _host._timer.Stop(0);
+
+                if (args.StoneType != StoneType.Null)
+                    _host._checkerboard.PutStone(args.Column, args.Row, args.StoneType);
+
+                if (_host._mainPlayer.GetPlayerGuid() == args.PlayerGuid)
+                    _host._mainPlayer.HaltTurn();
+            }
+
+            private void OnGameFinished(object sender, GameFinishedEventArgs args)
+            {
+                _host._timer.Stop(0);
+                _host._mainUIPanel.Hide();
+                bool isWinner = _host._mainPlayer.GetPlayerGuid() == args.WinnerGuid;
+                _host._showResultPanel?.Invoke(isWinner);
+            }
+
+            public void Exit()
+            {
+                _host._gameSession.PlayerTurnStartedEvent -= OnTurnStarted;
+                _host._gameSession.PlayerTurnFinishedEvent -= OnTurnFinished;
+                _host._gameSession.GameFinishedEvent -= OnGameFinished;
+            }
+
+            public void Update()
+            {
+                if (_host._timer.IsRunning(0))
+                    _host._mainUIPanel.SetRemainTime(_host._timer.GetRemainTime(0));
+            }
+        }
 
         public GameHost(IGameSession gameSession, ICheckerboard checkerboard, IPlayer mainPlayer,
             IMainUIPanel mainUIPanel, Timer timer,
@@ -26,105 +159,40 @@ namespace LikeLion.LH1.Client.Core.GameScene
             _timer = timer;
         }
 
+        private void ChangeState(IGameState newState)
+        {
+            _currentState?.Exit();
+            _currentState = newState;
+            _currentState.Enter();
+        }
+
         public void Connect()
         {
-            _gameSession.ConnectedEvent += OnConnectedEvent;
-
-            _gameSession.RequestConnect();
-        }
-
-        private void OnConnectedEvent(object sender, ConnectedEventArgs args)
-        {
-            _gameSession.ConnectedEvent -= OnConnectedEvent;
-
-            _mainPlayer.SetPlayerGuid(args.PlayerGuid);
-
-            RequestGame();
-        }
-
-        private void RequestGame()
-        {
-            Wait();
-
-            _gameSession.RequestGame(_mainPlayer.GetPlayerGuid());
-        }
-
-        public void Wait()
-        {
-            _gameSession.GameCreatedEvent += OnGameCreatedEvent;
-        }
-
-        private void OnGameCreatedEvent(object sender, GameCreatedEventArgs args)
-        {
-            _gameSession.GameCreatedEvent -= OnGameCreatedEvent;
-
-            _checkerboard.SetGameGuid(args.GameGuid);
-            _showPickStonePanel?.Invoke();
+            ChangeState(new ConnectingState(this));
         }
 
         public void Start()
         {
-            _gameSession.PlayerTurnStartedEvent += OnPlayerTurnStartedEvent;
-            _gameSession.PlayerTurnFinishedEvent += OnPlayerTurnFinishedEvent;
-            _gameSession.GameFinishedEvent += OnGameFinishedEvent;
-
-            _gameSession.StartGame(_checkerboard.GetGameGuid(), _mainPlayer.GetPlayerGuid());
-
-            _mainUIPanel.Show();
-            _mainUIPanel.SetMainPlayerStone(_checkerboard.GetStone(_mainPlayer.GetPlayerGuid()));
-        }
-
-        private void OnPlayerTurnStartedEvent(object sender, PlayerTurnStartedEventArgs args)
-        {
-            var stoneType = _checkerboard.GetStone(args.PlayerGuid);
-
-            _mainUIPanel.PlayTurnStartAnimation(stoneType);
-            _mainUIPanel.SetCurrentPlayerStone(stoneType);
-            _timer.Start(0, args.TimeLimit);
-
-            if (_mainPlayer.GetPlayerGuid() != args.PlayerGuid)
-                return;
-
-            _mainPlayer.StartTurn();
-        }
-
-        private void OnPlayerTurnFinishedEvent(object sender, PlayerTurnFinishedEventArgs args)
-        {
-            _timer.Stop(0);
-
-            if (args.StoneType != StoneType.Null)
-                _checkerboard.PutStone(args.Column, args.Row, args.StoneType);
-
-            if (_mainPlayer.GetPlayerGuid() != args.PlayerGuid)
-                return;
-            _mainPlayer.HaltTurn();
-        }
-
-        private void OnGameFinishedEvent(object sender, GameFinishedEventArgs args)
-        {
-            _timer.Stop(0);
-
-            _mainUIPanel.Hide();
-
-            bool isWinner = _mainPlayer.GetPlayerGuid() == args.WinnerGuid;
-            _showResultPanel?.Invoke(isWinner);
-
-            _gameSession.PlayerTurnStartedEvent -= OnPlayerTurnStartedEvent;
-            _gameSession.PlayerTurnFinishedEvent -= OnPlayerTurnFinishedEvent;
-            _gameSession.GameFinishedEvent -= OnGameFinishedEvent;
+            ChangeState(new PlayingState(this));
         }
 
         public void Restart()
         {
             _checkerboard.Clear();
-
-            RequestGame();
+            ChangeState(new WaitingState(this));
         }
 
         public void Update()
         {
-            if (_timer.IsRunning(0))
-                _mainUIPanel.SetRemainTime(_timer.GetRemainTime(0));
+            _currentState?.Update();
+        }
+
+        public void Destroy()
+        {
+            _currentState?.Exit();
+            _currentState = null;
+            _timer?.Stop(0);
+            _mainPlayer?.HaltTurn();
         }
     }
 }
